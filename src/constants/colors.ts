@@ -1,0 +1,61 @@
+export const statusColors = {
+  Temiz: {
+    bg: 'bg-emerald-50',
+    darkBg: 'dark:bg-emerald-500/10',
+    text: 'text-emerald-700',
+    darkText: 'dark:text-emerald-400',
+    border: 'border-emerald-200/50',
+    darkBorder: 'dark:border-emerald-500/20',
+    shadow: 'shadow-[0_0_10px_rgba(16,185,129,0.05)]',
+    darkShadow: 'dark:shadow-[0_0_10px_rgba(16,185,129,0.1)]',
+  },
+  'İncelemede': {
+    bg: 'bg-indigo-50',
+    darkBg: 'dark:bg-indigo-500/10',
+    text: 'text-indigo-700',
+    darkText: 'dark:text-indigo-400',
+    border: 'border-indigo-200/50',
+    darkBorder: 'dark:border-indigo-500/20',
+    shadow: 'shadow-[0_0_10px_rgba(99,102,241,0.05)]',
+    darkShadow: 'dark:shadow-[0_0_10px_rgba(99,102,241,0.1)]',
+  },
+  'Sevk Edildi': {
+    bg: 'bg-rose-50',
+    darkBg: 'dark:bg-rose-500/10',
+    text: 'text-rose-700',
+    darkText: 'dark:text-rose-400',
+    border: 'border-rose-200/50',
+    darkBorder: 'dark:border-rose-500/20',
+    shadow: 'shadow-[0_0_10px_rgba(244,63,94,0.05)]',
+    darkShadow: 'dark:shadow-[0_0_10px_rgba(244,63,94,0.1)]',
+  },
+  default: {
+    bg: 'bg-slate-50',
+    darkBg: 'dark:bg-slate-800',
+    text: 'text-slate-700',
+    darkText: 'dark:text-slate-300',
+    border: 'border-slate-200',
+    darkBorder: 'dark:border-slate-700',
+    shadow: '',
+    darkShadow: '',
+  },
+} as const;
+
+export const badgeColors = {
+  indigo: {
+    bg: 'bg-indigo-100',
+    darkBg: 'dark:bg-indigo-500/20',
+    text: 'text-indigo-700',
+    darkText: 'dark:text-indigo-400',
+    border: 'border-indigo-200',
+    darkBorder: 'dark:border-indigo-500/20',
+  },
+  emerald: {
+    bg: 'bg-emerald-100',
+    darkBg: 'dark:bg-emerald-500/20',
+    text: 'text-emerald-700',
+    darkText: 'dark:text-emerald-400',
+    border: 'border-emerald-200',
+    darkBorder: 'dark:border-emerald-500/20',
+  },
+};
