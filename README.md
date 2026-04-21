@@ -4,12 +4,13 @@
 
 **OSGB (İş Sağlığı ve Güvenliği) Test Yönetim Sistemi**
 
-Modüler yapıda geliştirilmiş, modern ve kullanıcı dostu bir test ve paket yönetim sistemi.
+Modüler yapıda geliştirilmiş, modern ve kullanıcı dostu bir test, firma ve personel yönetim sistemi.
 
 </div>
 
 ## ✨ Özellikler
 
+### Test Yönetimi
 - **Test Yönetimi**: Testlerin ekleme, düzenleme, silme ve kopyalama işlemleri
 - **Test Paketleri**: Testleri gruplayarak paket oluşturma ve indirim uygulama
 - **Kategori Filtreleme**: Laboratuvar, Görüntüleme, Kardiyoloji, SFT, Odyometri, Göz, Aşı kategorilerine göre filtreleme
@@ -17,12 +18,37 @@ Modüler yapıda geliştirilmiş, modern ve kullanıcı dostu bir test ve paket 
 - **Sıralama**: İsim, kategori veya fiyata göre sıralama (A-Z / Z-A)
 - **Sayfalama**: Büyük veri setleri için sayfalama desteği
 - **Toplu İşlemler**: Çoklu seçim ve toplu silme
-- **Dışa Aktarma**: Testleri CSV formatında dışa aktarma
+- **Excel İçe/Dışa Aktar**: Testleri Excel formatında dışa aktar ve içe aktar (duplicate kontrolü ile)
 - **Görünüm Modları**: Grid ve List görünüm seçenekleri
+
+### Firma Yönetimi
+- **Firma Kayıtları**: Firma ekleme, düzenleme ve silme işlemleri
+- **Sektör Filtreleme**: Teknoloji, Sağlık, Eğitim gibi sektörlere göre filtreleme
+- **Arama**: Firma adı, yetkili kişi veya vergi numarasına göre arama
+- **Sıralama**: Firma adı, sektör, çalışan sayısı veya kayıt tarihine göre sıralama
+- **Sayfalama**: Büyük veri setleri için sayfalama desteği
+- **Toplu İşlemler**: Çoklu seçim ve toplu silme
+- **Excel İçe/Dışa Aktar**: Firmaları Excel formatında dışa aktar ve içe aktar (vergi numarasına göre duplicate kontrolü)
+- **Toast Bildirimleri**: İşlem sonuçlarını şık bildirimlerle gösterme
+- **Görünüm Modları**: Grid ve List görünüm seçenekleri
+
+### Personel Yönetimi
+- **Personel Kayıtları**: Personel ekleme, düzenleme ve silme işlemleri
+- **Pozisyon Filtreleme**: Radyoloji Teknikeri, Odyometrist, Hemşire gibi pozisyonlara göre filtreleme
+- **Arama**: Personel adı veya pozisyona göre arama
+- **Sıralama**: Ad, pozisyon veya başlangıç tarihine göre sıralama
+- **Sayfalama**: Büyük veri setleri için sayfalama desteği
+- **Toplu İşlemler**: Çoklu seçim ve toplu silme
+- **Excel İçe/Dışa Aktar**: Personeli Excel formatında dışa aktar ve içe aktar (email ve telefondan duplicate kontrolü)
+- **Toast Bildirimleri**: İşlem sonuçlarını şık bildirimlerle gösterme
+- **Görünüm Modları**: Grid ve List görünüm seçenekleri
+
+### Genel Özellikler
 - **Responsive Tasarım**: Tüm cihazlarda mükemmel görünüm
 - **Dark Mode**: Koyu tema desteği
 - **Erişilebilirlik**: WCAG uyumlu erişilebilirlik özellikleri
 - **Modern UI**: Framer Motion animasyonları ve TailwindCSS styling
+- **Toast Bildirim Sistemi**: Uygulama içi şık ve animasyonlu bildirimler
 
 ## 🛠️ Teknoloji Yığını
 
@@ -30,6 +56,7 @@ Modüler yapıda geliştirilmiş, modern ve kullanıcı dostu bir test ve paket 
 - **Styling**: TailwindCSS 4
 - **Routing**: React Router DOM 7
 - **Animations**: Framer Motion
+- **Excel İşlemleri**: xlsx
 - **Icons**: Lucide React
 - **Charts**: Recharts
 - **Build Tool**: Vite 8
