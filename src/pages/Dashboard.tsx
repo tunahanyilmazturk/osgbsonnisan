@@ -98,7 +98,7 @@ export default function Dashboard() {
         <div className="flex flex-col xl:flex-row xl:items-end justify-between gap-6">
           <div className="flex-1">
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-slate-900 via-indigo-900 to-purple-900 dark:from-white dark:via-indigo-200 dark:to-purple-200 pb-1">
-              Günaydın, Dr. Ahmet
+              Günaydın, Tunahan
             </h1>
             <p className="text-slate-600 dark:text-slate-400 text-sm mt-3 flex flex-wrap items-center gap-2 font-medium">
               <Calendar size={14} className="text-indigo-500 dark:text-indigo-400" />

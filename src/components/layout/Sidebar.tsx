@@ -1,18 +1,19 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { NavLink } from 'react-router-dom';
-import { Activity, LogOut, ChevronRight, User, Settings } from 'lucide-react';
+import { Activity, LogOut, ChevronRight, User, Settings, ChevronDown, Circle } from 'lucide-react';
 import { menuGroups } from '../../lib/navigation';
 import { appConfig, currentUser } from '../../constants';
 
 export default function Sidebar({ sidebarOpen }: { sidebarOpen: boolean; }) {
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [collapsedGroups, setCollapsedGroups] = useState<Record<number, boolean>>({});
 
   return (
     <motion.aside 
       initial={false}
       animate={{ width: sidebarOpen ? 280 : 80 }}
-      transition={{ type: "spring" as const, stiffness: 300, damping: 30 }}
+      transition={{ type: "spring" as const, stiffness: 350, damping: 25 }}
       className="bg-slate-50/80 dark:bg-[#0B1120] border-r border-slate-200 dark:border-white/5 flex flex-col z-20 shrink-0 hidden sm:flex text-slate-600 dark:text-slate-300 relative shadow-2xl shadow-indigo-900/5 dark:shadow-indigo-900/20 transition-colors duration-300 h-full rounded-r-3xl"
     >
       {/* Decorative Top Glow */}
@@ -45,62 +46,82 @@ export default function Sidebar({ sidebarOpen }: { sidebarOpen: boolean; }) {
         {menuGroups.map((group, groupIndex) => (
           <div key={groupIndex} className="mb-8 last:mb-0">
             {sidebarOpen && (
-              <div className="px-6 mb-3">
-                <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 tracking-wider transition-colors duration-300">
+              <button
+                onClick={() => setCollapsedGroups(prev => ({ ...prev, [groupIndex]: !prev[groupIndex] }))}
+                className="px-6 mb-3 flex items-center gap-2 w-full group"
+              >
+                <span className="text-indigo-500 dark:text-indigo-400">
+                  {group.icon}
+                </span>
+                <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 tracking-wider transition-colors duration-300 flex-1 text-left">
                   {group.title}
                 </span>
-              </div>
+                <ChevronDown 
+                  size={12} 
+                  className={`text-slate-400 dark:text-slate-500 transition-transform duration-200 ${collapsedGroups[groupIndex] ? '-rotate-90' : ''}`}
+                />
+              </button>
             )}
-            <div className="space-y-1.5 px-3">
-              {group.items.map((item, index) => (
-                <NavLink 
-                  key={index}
-                  to={item.path}
-                  title={!sidebarOpen ? item.name : ''}
-                  className={({ isActive }) => `w-full flex items-center justify-between px-3 py-2.5 rounded-2xl transition-all group relative overflow-hidden ${isActive ? 'bg-indigo-50 dark:bg-indigo-500/10 text-indigo-700 dark:text-indigo-300 font-semibold shadow-inner dark:shadow-white/5' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/5'}`}
+            <AnimatePresence>
+              {!collapsedGroups[groupIndex] && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={{ duration: 0.2 }}
+                  className="space-y-1.5 px-3 overflow-hidden"
                 >
-                  {({ isActive }) => (
-                    <>
-                      {isActive && (
-                        <motion.div 
-                          layoutId="activeIndicator"
-                          className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 bg-indigo-600 dark:bg-indigo-500 rounded-r-full shadow-[0_0_10px_rgba(99,102,241,0.4)] dark:shadow-[0_0_10px_rgba(99,102,241,0.8)]"
-                        />
-                      )}
-                      
-                      <div className="flex items-center gap-3 w-full relative z-10">
-                        <motion.span 
-                          whileHover={{ scale: 1.1, rotate: 5 }}
-                          className={`${isActive ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400 dark:text-slate-500 group-hover:text-indigo-500 dark:group-hover:text-slate-300'} transition-all shrink-0 ${!sidebarOpen && 'mx-auto'}`}
-                        >
-                          {item.icon}
-                        </motion.span>
-                        <AnimatePresence>
-                          {sidebarOpen && (
+                  {group.items.map((item, index) => (
+                    <NavLink 
+                      key={index}
+                      to={item.path}
+                      title={!sidebarOpen ? item.name : ''}
+                      className={({ isActive }) => `w-full flex items-center justify-between px-3 py-2.5 rounded-2xl transition-all group relative overflow-hidden ${isActive ? 'bg-indigo-50 dark:bg-indigo-500/10 text-indigo-700 dark:text-indigo-300 font-semibold shadow-inner dark:shadow-white/5' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/5'}`}
+                    >
+                      {({ isActive }) => (
+                        <>
+                          {isActive && (
+                            <motion.div 
+                              layoutId="activeIndicator"
+                              className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 bg-indigo-600 dark:bg-indigo-500 rounded-r-full shadow-[0_0_10px_rgba(99,102,241,0.4)] dark:shadow-[0_0_10px_rgba(99,102,241,0.8)]"
+                            />
+                          )}
+                          
+                          <div className="flex items-center gap-3 w-full relative z-10">
                             <motion.span 
-                              initial={{ opacity: 0, x: -10 }}
-                              animate={{ opacity: 1, x: 0 }}
-                              exit={{ opacity: 0, x: -10 }}
-                              className="text-sm whitespace-nowrap flex-1 text-left"
+                              whileHover={{ scale: 1.1, rotate: 5 }}
+                              className={`${isActive ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400 dark:text-slate-500 group-hover:text-indigo-500 dark:group-hover:text-slate-300'} transition-all shrink-0 ${!sidebarOpen && 'mx-auto'}`}
                             >
-                              {item.name}
+                              {item.icon}
+                            </motion.span>
+                            <AnimatePresence>
+                              {sidebarOpen && (
+                                <motion.span 
+                                  initial={{ opacity: 0, x: -10 }}
+                                  animate={{ opacity: 1, x: 0 }}
+                                  exit={{ opacity: 0, x: -10 }}
+                                  className="text-sm whitespace-nowrap flex-1 text-left"
+                                >
+                                  {item.name}
+                                </motion.span>
+                              )}
+                            </AnimatePresence>
+                          </div>
+                          {sidebarOpen && item.badge && (
+                            <motion.span 
+                              whileHover={{ scale: 1.1 }}
+                              className={`text-[10px] px-2 py-0.5 rounded-full font-bold shadow-sm ${(item as any).badgeColor}`}
+                            >
+                              {item.badge}
                             </motion.span>
                           )}
-                        </AnimatePresence>
-                      </div>
-                      {sidebarOpen && item.badge && (
-                        <motion.span 
-                          whileHover={{ scale: 1.1 }}
-                          className={`text-[10px] px-2 py-0.5 rounded-full font-bold shadow-sm ${(item as any).badgeColor}`}
-                        >
-                          {item.badge}
-                        </motion.span>
+                        </>
                       )}
-                    </>
-                  )}
-                </NavLink>
-              ))}
-            </div>
+                    </NavLink>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         ))}
       </nav>
@@ -111,12 +132,17 @@ export default function Sidebar({ sidebarOpen }: { sidebarOpen: boolean; }) {
           <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/5 to-purple-500/5 dark:from-indigo-500/10 dark:to-purple-500/10 opacity-0 hover:opacity-100 transition-opacity pointer-events-none" />
           
           <div className="flex items-center gap-3 relative z-10 w-full overflow-hidden justify-center sm:justify-start">
-            <motion.div 
-              whileHover={{ scale: 1.1, rotate: 5 }}
-              className={`rounded-2xl bg-gradient-to-br from-indigo-100 dark:from-indigo-500/20 to-indigo-50 dark:to-slate-800 border border-indigo-200 dark:border-indigo-500/30 flex items-center justify-center shrink-0 transition-transform ${sidebarOpen ? 'w-10 h-10' : 'w-10 h-10'}`}
-            >
-              <span className="text-indigo-600 dark:text-indigo-100 font-bold text-sm tracking-widest leading-none">{currentUser.initials}</span>
-            </motion.div>
+            <div className="relative">
+              <motion.div 
+                whileHover={{ scale: 1.1, rotate: 5 }}
+                className={`rounded-2xl bg-gradient-to-br from-indigo-100 dark:from-indigo-500/20 to-indigo-50 dark:to-slate-800 border border-indigo-200 dark:border-indigo-500/30 flex items-center justify-center shrink-0 transition-transform ${sidebarOpen ? 'w-10 h-10' : 'w-10 h-10'}`}
+              >
+                <span className="text-indigo-600 dark:text-indigo-100 font-bold text-sm tracking-widest leading-none">{currentUser.initials}</span>
+              </motion.div>
+              <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-500 rounded-full border-2 border-white dark:border-slate-800 shadow-sm">
+                <div className="absolute inset-0 bg-emerald-400 rounded-full animate-ping opacity-75"></div>
+              </div>
+            </div>
             
             <AnimatePresence>
               {sidebarOpen && (

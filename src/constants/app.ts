@@ -4,8 +4,9 @@ export const appConfig = {
 };
 
 export const currentUser = {
-  name: 'Dr. Ahmet',
-  role: 'İşyeri Hekimi',
-  initials: 'DR',
-  avatar: null,
+  name: 'Tunahan',
+  initials: 'T',
+  role: 'İş Yeri Hekimi',
+  email: 'tunahan@osgb.com',
+  avatar: null
 };
