@@ -21,6 +21,7 @@ import TestsPage from './pages/Tests';
 import PackagesPage from './pages/PackagesPage';
 import ProposalsPage from './pages/ProposalsPage';
 import ProposalFormPage from './pages/ProposalFormPage';
+import ProposalDetailPage from './pages/ProposalDetailPage';
 import CompaniesPage from './pages/Companies';
 import CompaniesFormPage from './pages/CompaniesFormPage';
 import PersonnelPage from './pages/Personnel';
@@ -43,6 +44,7 @@ export default function App() {
             <Route path="tests/package/new" element={<PackageFormPage />} />
             <Route path="proposals" element={<ProposalsPage />} />
             <Route path="proposals/new" element={<ProposalFormPage />} />
+            <Route path="proposals/:id" element={<ProposalDetailPage />} />
             <Route path="companies" element={<CompaniesPage />} />
             <Route path="companies/add" element={<CompaniesFormPage />} />
             <Route path="personnel" element={<PersonnelPage />} />

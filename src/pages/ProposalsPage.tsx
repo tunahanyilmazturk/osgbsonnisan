@@ -1,15 +1,15 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Trash2, FileCheck, LayoutGrid, List, X, Building2, Package as PackageIcon, CheckCircle, XCircle, Clock, Download, Upload, Edit, Copy } from 'lucide-react';
+import { Plus, Trash2, FileCheck, LayoutGrid, List, X, Building2, Package as PackageIcon, CheckCircle, XCircle, Clock, Edit, Copy } from 'lucide-react';
 import { Button, ToastContainer } from '../components/ui';
-import { Proposal, initialProposals } from '../constants/mockData';
-import { exportToExcelAdvanced, importFromExcelAdvanced } from '../lib/excel';
+import { Proposal, initialProposals, Test, initialTests } from '../constants/mockData';
 import { ProposalsFilters, ProposalsPagination, ProposalsCard, ProposalsListItem } from '../components/proposals';
 import type { ToastType } from '../components/ui/Toast';
 
 export default function ProposalsPage() {
   const navigate = useNavigate();
   const [proposals, setProposals] = useState<Proposal[]>([]);
+  const [tests, setTests] = useState<Test[]>(initialTests);
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState<'date' | 'price' | 'status'>('date');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
@@ -26,9 +26,8 @@ export default function ProposalsPage() {
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   const [dateRange, setDateRange] = useState<{ start: string; end: string }>({ start: '', end: '' });
   const [priceRange, setPriceRange] = useState<{ min: number; max: number }>({ min: 0, max: 0 });
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Load proposals from localStorage on mount
+  // Load proposals and tests from localStorage on mount
   useEffect(() => {
     const savedProposals = localStorage.getItem('proposals');
     if (savedProposals) {
@@ -37,6 +36,16 @@ export default function ProposalsPage() {
         setProposals(parsedProposals);
       } catch (e) {
         console.error('Failed to parse proposals from localStorage:', e);
+      }
+    }
+
+    const savedTests = localStorage.getItem('tests');
+    if (savedTests) {
+      try {
+        const parsedTests = JSON.parse(savedTests);
+        setTests(parsedTests);
+      } catch (e) {
+        console.error('Failed to parse tests from localStorage:', e);
       }
     }
   }, []);
@@ -141,64 +150,6 @@ export default function ProposalsPage() {
     setProposals(updatedProposals);
     localStorage.setItem('proposals', JSON.stringify(updatedProposals));
     showToast('success', 'Teklif kopyalandı');
-  };
-
-  const handleExcelExport = () => {
-    const headers = [
-      { key: 'id', label: 'ID' },
-      { key: 'company', label: 'Firma' },
-      { key: 'testCount', label: 'Test Sayısı' },
-      { key: 'status', label: 'Durum' },
-      { key: 'date', label: 'Tarih' },
-      { key: 'totalPrice', label: 'Fiyat' }
-    ];
-
-    const exportData = filteredProposals.map(proposal => ({
-      ...proposal,
-      testCount: (proposal as any).selectedTests?.length || 0
-    }));
-
-    exportToExcelAdvanced(
-      exportData,
-      headers,
-      { fileName: 'teklifler.xlsx', sheetName: 'Teklifler' }
-    );
-    showToast('success', 'Teklifler Excel olarak dışa aktarıldı');
-  };
-
-  const handleExcelImport = () => {
-    fileInputRef.current?.click();
-  };
-
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    try {
-      const result = await importFromExcelAdvanced(file);
-      const newProposals: Proposal[] = result.data.map((row: any) => ({
-        id: row.id || `PROP-${Date.now()}`,
-        company: row.company || '',
-        companyId: row.companyId || '',
-        package: '',
-        packageId: '',
-        status: row.status || 'pending',
-        date: row.date || new Date().toISOString(),
-        totalPrice: row.totalPrice || 0,
-        selectedTests: row.testCount ? Array.from({ length: row.testCount }, (_, i) => `test-${i}`) : [],
-      }));
-
-      const updatedProposals = [...proposals, ...newProposals];
-      setProposals(updatedProposals);
-      localStorage.setItem('proposals', JSON.stringify(updatedProposals));
-      showToast('success', `${newProposals.length} teklif başarıyla içe aktarıldı`);
-    } catch (error) {
-      showToast('error', 'İçe aktarma başarısız oldu');
-    }
-
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
   };
 
   const handlePageChange = (page: number) => {
@@ -354,22 +305,6 @@ export default function ProposalsPage() {
           >
             Toplu Sil
           </Button>
-          <Button
-            variant="secondary"
-            icon={<Download size={16} />}
-            onClick={handleExcelExport}
-            className="shrink-0"
-          >
-            Excel
-          </Button>
-          <Button
-            variant="secondary"
-            icon={<Upload size={16} />}
-            onClick={handleExcelImport}
-            className="shrink-0"
-          >
-            İçe Aktar
-          </Button>
           <div className="flex items-center bg-slate-100 dark:bg-slate-800 rounded-xl p-1 shrink-0">
             <button
               onClick={() => setViewMode('grid')}
@@ -393,13 +328,6 @@ export default function ProposalsPage() {
             Yeni Teklif
           </Button>
         </div>
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept=".xlsx,.xls"
-          onChange={handleFileChange}
-          className="hidden"
-        />
       </div>
 
       {/* Filters */}
@@ -558,6 +486,7 @@ export default function ProposalsPage() {
                       <ProposalsListItem
                         key={proposal.id}
                         proposal={proposal}
+                        tests={tests}
                         statusColors={statusColors}
                         statusIcons={statusIcons}
                         selectedProposals={selectedProposals}

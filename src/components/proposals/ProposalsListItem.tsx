@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Edit, Trash2, Copy, Building2, CheckCircle, XCircle, Clock, ChevronDown } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Edit, Trash2, Copy, Building2, CheckCircle, XCircle, Clock, ChevronDown, ChevronRight, Package as PackageIcon } from 'lucide-react';
 
 interface ProposalsListItemProps {
   proposal: {
@@ -9,7 +10,10 @@ interface ProposalsListItemProps {
     status: string;
     date: string;
     totalPrice: number;
+    proposalTitle?: string;
+    selectedTests?: Array<{ testId: string; quantity: number; customPrice?: number }>;
   };
+  tests: Array<{ id: string; name: string; category: string; price: number; unit: string }>;
   statusColors: { [key: string]: { bg: string; icon: string; darkBg: string; darkIcon: string } };
   statusIcons: { [key: string]: React.ReactNode };
   selectedProposals: Set<string>;
@@ -23,6 +27,7 @@ interface ProposalsListItemProps {
 
 export default function ProposalsListItem({
   proposal,
+  tests,
   statusColors,
   statusIcons,
   selectedProposals,
@@ -33,6 +38,8 @@ export default function ProposalsListItem({
   onStatusChange,
   index,
 }: ProposalsListItemProps) {
+  const navigate = useNavigate();
+  const [showTests, setShowTests] = useState(false);
   const statusConfig = {
     pending: { label: 'Beklemede', icon: Clock },
     approved: { label: 'Onaylandı', icon: CheckCircle },
@@ -97,12 +104,18 @@ export default function ProposalsListItem({
     setShowDropdown(false);
   };
 
+  const handleRowClick = () => {
+    navigate(`/proposals/${proposal.id}`);
+  };
+
   return (
-    <tr
-      key={proposal.id}
-      className="border-b border-slate-200 dark:border-slate-700/50 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors"
-    >
-      <td className="p-4">
+    <>
+      <tr
+        key={proposal.id}
+        className="border-b border-slate-200 dark:border-slate-700/50 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors cursor-pointer"
+        onClick={handleRowClick}
+      >
+      <td className="p-4" onClick={(e) => e.stopPropagation()}>
         <input
           type="checkbox"
           checked={selectedProposals.has(proposal.id)}
@@ -117,14 +130,24 @@ export default function ProposalsListItem({
           </div>
           <div>
             <span className="font-semibold text-slate-900 dark:text-white">{proposal.company}</span>
-            {(proposal as any).proposalTitle && (
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{(proposal as any).proposalTitle}</p>
+            {proposal.proposalTitle && (
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{proposal.proposalTitle}</p>
             )}
           </div>
         </div>
       </td>
       <td className="p-4">
-        <span className="text-slate-600 dark:text-slate-400">{(proposal as any).selectedTests?.length || 0} test</span>
+        <div className="flex items-center gap-2">
+          <span className="text-slate-600 dark:text-slate-400">{(proposal.selectedTests?.length || 0)} test</span>
+          {proposal.selectedTests && proposal.selectedTests.length > 0 && (
+            <button
+              onClick={() => setShowTests(!showTests)}
+              className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors"
+            >
+              <ChevronRight size={14} className={`transition-transform ${showTests ? 'rotate-90' : ''}`} />
+            </button>
+          )}
+        </div>
       </td>
       <td className="p-4">
         <span className="text-slate-600 dark:text-slate-400">{proposal.date ? new Date(proposal.date).toLocaleDateString('tr-TR') : '-'}</span>
@@ -132,7 +155,7 @@ export default function ProposalsListItem({
       <td className="p-4 text-right">
         <span className="font-bold text-slate-900 dark:text-white">{(proposal.totalPrice || 0).toLocaleString()} ₺</span>
       </td>
-      <td className="p-4">
+      <td className="p-4" onClick={(e) => e.stopPropagation()}>
         <div className="relative">
           <button
             onClick={handleStatusClick}
@@ -165,7 +188,7 @@ export default function ProposalsListItem({
           )}
         </div>
       </td>
-      <td className="p-4">
+      <td className="p-4" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-center gap-2">
           <button onClick={() => onCopy(proposal)} className="p-2 rounded-lg text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 transition-colors">
             <Copy size={14} />
@@ -179,5 +202,37 @@ export default function ProposalsListItem({
         </div>
       </td>
     </tr>
+    {showTests && proposal.selectedTests && proposal.selectedTests.length > 0 && (
+      <tr className="bg-slate-50/50 dark:bg-slate-800/30">
+        <td colSpan={7} className="p-4">
+          <div className="bg-white dark:bg-slate-700 rounded-lg border border-slate-200 dark:border-slate-600 p-4">
+            <h4 className="text-sm font-semibold text-slate-900 dark:text-white mb-3 flex items-center gap-2">
+              <PackageIcon size={16} />
+              Seçilen Testler
+            </h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+              {proposal.selectedTests.map((selectedTest) => {
+                const test = tests.find(t => t.id === selectedTest.testId);
+                if (!test) return null;
+                const price = selectedTest.customPrice || test.price;
+                return (
+                  <div key={selectedTest.testId} className="p-3 bg-slate-50 dark:bg-slate-600 rounded-lg border border-slate-200 dark:border-slate-500">
+                    <div className="flex items-start justify-between mb-2">
+                      <span className="font-medium text-sm text-slate-900 dark:text-white">{test.name}</span>
+                      <span className="text-xs text-slate-500 dark:text-slate-400">{test.category}</span>
+                    </div>
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="text-slate-600 dark:text-slate-400">Miktar: {selectedTest.quantity}</span>
+                      <span className="font-semibold text-slate-900 dark:text-white">{price.toLocaleString()} ₺</span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </td>
+      </tr>
+    )}
+    </>
   );
 }

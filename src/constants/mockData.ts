@@ -16,6 +16,12 @@ export interface TestPackage {
   totalPrice: number;
 }
 
+export interface SelectedTest {
+  testId: string;
+  quantity: number;
+  customPrice?: number;
+}
+
 export interface Proposal {
   id: string;
   company: string;
@@ -26,14 +32,17 @@ export interface Proposal {
   date: string;
   totalPrice: number;
   discountPercentage?: number;
+  vatPercentage?: number;
   finalPrice?: number;
   validityDate?: string;
   notes?: string;
   contactPerson?: string;
   proposalTitle?: string;
+  description?: string;
+  coverLetter?: string;
   paymentMethod?: string;
   deliveryDate?: string;
-  selectedTests?: string[];
+  selectedTests?: SelectedTest[];
 }
 
 export const initialTests: Test[] = [

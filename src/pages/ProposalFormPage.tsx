@@ -24,10 +24,12 @@ export default function ProposalFormPage() {
     validityDate: '',
     notes: '',
     contactPerson: '',
-    selectedTests: [] as string[],
+    selectedTests: [] as { testId: string; quantity: number; customPrice?: number }[],
     proposalTitle: '',
     paymentMethod: '',
     deliveryDate: '',
+    description: '',
+    coverLetter: '',
   });
 
   const [companySearch, setCompanySearch] = useState('');
@@ -82,7 +84,7 @@ export default function ProposalFormPage() {
       const price = st.customPrice !== undefined ? st.customPrice : (test?.price || 0);
       return sum + (price * st.quantity);
     }, 0);
-    setFormData({ ...formData, totalPrice, selectedTests: testSelections.map(st => st.testId) });
+    setFormData({ ...formData, totalPrice, selectedTests: testSelections });
   };
 
   const generateProposalTitles = () => {
@@ -207,6 +209,7 @@ Saygılar,
   useEffect(() => {
     if (location.state?.proposal) {
       const proposal = location.state.proposal;
+      const loadedTests = (proposal as any).selectedTests || [];
       setFormData({
         company: proposal.company,
         companyId: proposal.companyId,
@@ -219,11 +222,15 @@ Saygılar,
         validityDate: proposal.validityDate || '',
         notes: proposal.notes || '',
         contactPerson: proposal.contactPerson || '',
-        selectedTests: (proposal as any).selectedTests || [],
+        selectedTests: loadedTests,
         proposalTitle: (proposal as any).proposalTitle || '',
+        description: (proposal as any).description || '',
+        coverLetter: (proposal as any).coverLetter || '',
         paymentMethod: (proposal as any).paymentMethod || '',
         deliveryDate: (proposal as any).deliveryDate || '',
       });
+      // Also set the selectedTests state
+      setSelectedTests(loadedTests);
     } else {
       // Set default validity date to today if creating new proposal
       const today = new Date().toISOString().split('T')[0];
@@ -273,10 +280,17 @@ Saygılar,
       date: new Date().toISOString(),
       totalPrice: formData.totalPrice,
       discountPercentage: formData.discountPercentage,
+      vatPercentage: formData.vatPercentage,
       finalPrice: finalPrice,
       validityDate: formData.validityDate,
       notes: formData.notes,
       contactPerson: formData.contactPerson,
+      proposalTitle: formData.proposalTitle,
+      description: formData.description,
+      coverLetter: formData.coverLetter,
+      paymentMethod: formData.paymentMethod,
+      deliveryDate: formData.deliveryDate,
+      selectedTests: selectedTests,
     };
 
     // Save to localStorage
@@ -624,12 +638,12 @@ Saygılar,
                                   const price = st.customPrice || test?.price || 0;
                                   return sum + (price * st.quantity);
                                 }, 0);
-                                setFormData({ 
-                                  ...formData, 
-                                  package: pkg.name, 
-                                  packageId: pkg.id, 
+                                setFormData({
+                                  ...formData,
+                                  package: pkg.name,
+                                  packageId: pkg.id,
                                   totalPrice,
-                                  selectedTests: pkg.testIds 
+                                  selectedTests: newTests
                                 });
                               }}
                               className="w-full p-3 rounded-xl border-2 transition-all text-left hover:shadow-md border-slate-200 dark:border-slate-600 hover:border-indigo-300 dark:hover:border-indigo-500 bg-white dark:bg-slate-800"
