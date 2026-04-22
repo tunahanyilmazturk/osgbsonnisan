@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
 import { X } from 'lucide-react';
 
 interface ModalProps {
@@ -38,25 +37,18 @@ export function Modal({
   };
 
   return (
-    <AnimatePresence>
+    <>
       {isOpen && (
         <>
           {/* Backdrop */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+          <div
             onClick={onClose}
             className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50"
           />
           
           {/* Modal */}
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              transition={{ duration: 0.2 }}
+            <div
               className={`${sizes[size]} w-full bg-white dark:bg-slate-800 rounded-2xl shadow-2xl max-h-[90vh] overflow-hidden flex flex-col`}
             >
               {/* Header */}
@@ -82,10 +74,10 @@ export function Modal({
               <div className="flex-1 overflow-y-auto p-6">
                 {children}
               </div>
-            </motion.div>
+            </div>
           </div>
         </>
       )}
-    </AnimatePresence>
+    </>
   );
 }

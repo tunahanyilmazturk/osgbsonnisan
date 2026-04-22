@@ -1,5 +1,4 @@
 import React from 'react';
-import { motion } from 'motion/react';
 import { 
   Plus, FileText, Users, Calendar, AlertCircle, 
   Settings, Download, Upload, Search, Filter
@@ -98,23 +97,14 @@ export default function QuickActions({ actions = defaultActions }: QuickActionsP
   return (
     <div className="flex flex-wrap gap-2">
       {actions.map((action, index) => (
-        <motion.button
+        <button
           key={action.id}
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: index * 0.05, duration: 0.3 }}
-          whileHover={{ 
-            scale: 1.05, 
-            y: -2,
-            boxShadow: '0 8px 25px -5px rgba(0, 0, 0, 0.1)'
-          }}
-          whileTap={{ scale: 0.95 }}
           onClick={action.onClick}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl ${action.bgColor} ${action.borderColor} border ${action.color} font-semibold text-sm transition-all shadow-sm hover:shadow-md`}
+          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl ${action.bgColor} ${action.borderColor} border ${action.color} font-semibold text-sm transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5`}
         >
           {action.icon}
           <span>{action.label}</span>
-        </motion.button>
+        </button>
       ))}
     </div>
   );

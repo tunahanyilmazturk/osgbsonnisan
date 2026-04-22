@@ -1,6 +1,4 @@
 import React from 'react';
-import { motion } from 'motion/react';
-import { itemVariants } from '../../lib/animations';
 
 interface SettingsSectionProps {
   title: string;
@@ -12,13 +10,7 @@ interface SettingsSectionProps {
 
 export function SettingsSection({ title, description, icon, children, delay = 0 }: SettingsSectionProps) {
   return (
-    <motion.div
-      variants={itemVariants}
-      initial="hidden"
-      animate="show"
-      transition={{ delay }}
-      className="bg-gradient-to-br from-white/95 to-white/90 dark:from-slate-800/95 dark:to-slate-800/90 backdrop-blur-xl rounded-3xl shadow-[0_4px_20px_rgba(0,0,0,0.08)] dark:shadow-[0_4px_30px_rgba(0,0,0,0.4)] border border-slate-200/60 dark:border-slate-700/60 p-6 lg:p-8 relative overflow-hidden"
-    >
+    <div className="bg-gradient-to-br from-white/95 to-white/90 dark:from-slate-800/95 dark:to-slate-800/90 backdrop-blur-xl rounded-3xl shadow-[0_4px_20px_rgba(0,0,0,0.08)] dark:shadow-[0_4px_30px_rgba(0,0,0,0.4)] border border-slate-200/60 dark:border-slate-700/60 p-6 lg:p-8 relative overflow-hidden">
       <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-indigo-500/5 to-purple-500/5 rounded-full blur-[40px] -z-10 pointer-events-none" />
       
       <div className="flex items-start gap-4 mb-6">
@@ -36,6 +28,6 @@ export function SettingsSection({ title, description, icon, children, delay = 0 
       <div className="space-y-4">
         {children}
       </div>
-    </motion.div>
+    </div>
   );
 }

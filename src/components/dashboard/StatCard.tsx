@@ -1,5 +1,4 @@
 import React from 'react';
-import { motion } from 'motion/react';
 
 interface StatCardProps {
   title: string;
@@ -27,11 +26,7 @@ export function StatCard({
     : "M0,40 Q10,35 20,45 T40,20 T60,30 T80,10 T100,5";
 
   return (
-    <motion.div
-      whileHover={{ scale: 1.02, rotateX: 2, rotateY: 2 }}
-      transition={{ type: "spring" as const, stiffness: 400, damping: 20 }}
-      className="bg-gradient-to-br from-white/90 to-white/60 dark:from-slate-800/90 dark:to-slate-800/60 backdrop-blur-xl p-5 lg:p-6 rounded-3xl shadow-[0_4px_20px_rgba(0,0,0,0.08)] dark:shadow-[0_4px_30px_rgba(0,0,0,0.3)] border border-slate-200/60 dark:border-slate-700/60 hover:shadow-2xl hover:shadow-indigo-500/15 hover:-translate-y-1 hover:border-indigo-300/50 dark:hover:border-indigo-500/30 transition-all duration-300 group cursor-default relative overflow-hidden flex flex-col justify-between h-full"
-    >
+    <div className="bg-gradient-to-br from-white/90 to-white/60 dark:from-slate-800/90 dark:to-slate-800/60 backdrop-blur-xl p-5 lg:p-6 rounded-3xl shadow-[0_4px_20px_rgba(0,0,0,0.08)] dark:shadow-[0_4px_30px_rgba(0,0,0,0.3)] border border-slate-200/60 dark:border-slate-700/60 hover:shadow-2xl hover:shadow-indigo-500/15 hover:-translate-y-1 hover:border-indigo-300/50 dark:hover:border-indigo-500/30 transition-all duration-300 group cursor-default relative overflow-hidden flex flex-col justify-between h-full">
       <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/0 via-indigo-500/0 to-purple-500/0 group-hover:from-indigo-500/5 group-hover:via-purple-500/5 group-hover:to-purple-500/5 transition-all duration-500 pointer-events-none" />
       
       <div className={`absolute bottom-0 left-0 right-0 h-24 opacity-[0.05] dark:opacity-[0.1] pointer-events-none group-hover:scale-y-110 group-hover:opacity-[0.1] dark:group-hover:opacity-[0.2] transition-all duration-700 ${chartColor}`}>
@@ -57,6 +52,6 @@ export function StatCard({
         </span>
         <span className="text-xs text-slate-400 dark:text-slate-500 ml-2 font-medium">{trendLabel || 'geçen aya göre'}</span>
       </div>
-    </motion.div>
+    </div>
   );
 }

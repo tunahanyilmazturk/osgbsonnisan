@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Menu, Search, Command, Sun, Moon, Bell, X, User, LogOut, Settings, Building2, Users, FlaskConical, ArrowRight, HelpCircle, Info, AlertTriangle, Plus } from 'lucide-react';
-import { motion, AnimatePresence } from 'motion/react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { getRouteName } from '../../lib/navigation';
 import { appConfig, currentUser, initialCompanies, initialStaff } from '../../constants';
@@ -82,22 +81,16 @@ export default function Topbar({
   return (
     <header className="h-16 lg:h-20 bg-white/70 dark:bg-[#0B1120]/70 backdrop-blur-xl border-b border-slate-200/60 dark:border-white/5 flex items-center justify-between px-4 lg:px-8 sticky top-0 z-30 shrink-0 supports-[backdrop-filter]:bg-white/50 dark:supports-[backdrop-filter]:bg-[#0B1120]/50 transition-colors duration-300">
       <div className="flex items-center gap-4">
-        <motion.button
-          whileHover={{ scale: 1.1, rotate: 180 }}
-          whileTap={{ scale: 0.95 }}
+        <button
           onClick={() => setSidebarOpen(!sidebarOpen)}
           className="p-2.5 -ml-2 rounded-xl text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/80 hidden sm:block transition-all duration-300"
         >
           <Menu size={20} />
-        </motion.button>
+        </button>
         <div className="flex items-center gap-2.5 text-sm">
-          <motion.span 
-            className="font-bold text-slate-900 dark:text-white tracking-tight bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent"
-            whileHover={{ scale: 1.05 }}
-            transition={{ type: "spring", stiffness: 400 }}
-          >
+          <span className="font-bold text-slate-900 dark:text-white tracking-tight bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
             {appConfig.name}
-          </motion.span>
+          </span>
           <span className="text-slate-300 dark:text-slate-600 font-light">/</span>
           <span className="text-slate-500 dark:text-slate-400 font-medium">{currentPathName}</span>
         </div>
@@ -105,11 +98,6 @@ export default function Topbar({
 
       <div className="flex items-center gap-2 lg:gap-5">
         <div className="relative hidden md:flex items-center group">
-          <AnimatePresence>
-            {searchOpen && (
-              <div className="absolute -inset-0.5 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-xl blur opacity-20 transition duration-500"></div>
-            )}
-          </AnimatePresence>
 
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 group-focus-within:text-indigo-500 dark:group-focus-within:text-indigo-400 transition-colors z-10" size={16} />
           <input 
@@ -127,23 +115,15 @@ export default function Topbar({
         <div className="h-6 w-px bg-slate-200 dark:bg-slate-800/80 hidden md:block mx-1"></div>
 
         <div className="relative">
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+          <button
             onClick={() => setQuickActionsOpen(!quickActionsOpen)}
             className="p-2 text-slate-400 dark:text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-indigo-600 dark:hover:text-indigo-400 rounded-xl transition-all"
           >
             <Plus size={18} />
-          </motion.button>
+          </button>
 
-          <AnimatePresence>
-            {quickActionsOpen && (
-              <motion.div
-                initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                className="absolute right-0 top-12 w-48 bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 p-2 z-50"
-              >
+          {quickActionsOpen && (
+              <div className="absolute right-0 top-12 w-48 bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 p-2 z-50">
                 <button
                   onClick={() => { navigate('/tests'); setQuickActionsOpen(false); }}
                   className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors"
@@ -165,24 +145,19 @@ export default function Topbar({
                   <Users size={16} className="text-blue-500" />
                   <span className="text-sm text-slate-700 dark:text-slate-300">Yeni Personel</span>
                 </button>
-              </motion.div>
+              </div>
             )}
-          </AnimatePresence>
         </div>
 
-        <motion.button
-          whileHover={{ rotate: 15 }}
-          whileTap={{ scale: 0.95 }}
+        <button
           onClick={toggleDarkMode}
           className="p-2 text-slate-400 dark:text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-amber-500 dark:hover:text-amber-400 rounded-xl transition-all"
         >
           {isDark ? <Sun size={18} /> : <Moon size={18} />}
-        </motion.button>
+        </button>
 
         <div className="relative">
-          <motion.button
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.95 }}
+          <button
             onClick={() => setNotificationsOpen(!notificationsOpen)}
             className="relative p-2 text-slate-400 dark:text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-700 dark:hover:text-slate-200 rounded-xl transition-all"
           >
@@ -192,16 +167,10 @@ export default function Topbar({
                 {unreadCount}
               </span>
             )}
-          </motion.button>
+          </button>
 
-          <AnimatePresence>
-            {notificationsOpen && (
-              <motion.div
-                initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                className="absolute right-0 top-12 w-80 bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 p-4 z-50"
-              >
+          {notificationsOpen && (
+              <div className="absolute right-0 top-12 w-80 bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 p-4 z-50">
                 <div className="flex items-center justify-between mb-3">
                   <h3 className="font-semibold text-slate-900 dark:text-white">Bildirimler</h3>
                   {unreadCount > 0 && (
@@ -244,16 +213,13 @@ export default function Topbar({
                 >
                   Tüm bildirimleri gör
                 </button>
-              </motion.div>
+              </div>
             )}
-          </AnimatePresence>
         </div>
         
         {/* Desktop Profile Avatar */}
         <div className="relative hidden sm:block">
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+          <button
             onClick={() => setProfileOpen(!profileOpen)}
             className="flex items-center gap-3 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
           >
@@ -264,16 +230,10 @@ export default function Topbar({
               <p className="text-sm font-semibold text-slate-900 dark:text-white">{currentUser.name}</p>
               <p className="text-xs text-slate-500 dark:text-slate-400">{currentUser.role}</p>
             </div>
-          </motion.button>
+          </button>
 
-          <AnimatePresence>
-            {profileOpen && (
-              <motion.div
-                initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                className="absolute right-0 top-12 w-56 bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 p-2 z-50"
-              >
+          {profileOpen && (
+              <div className="absolute right-0 top-12 w-56 bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 p-2 z-50">
                 <button 
                   onClick={() => { navigate('/profile'); setProfileOpen(false); }}
                   className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors"
@@ -301,9 +261,8 @@ export default function Topbar({
                   <LogOut size={16} />
                   <span className="text-sm font-medium">Çıkış Yap</span>
                 </button>
-              </motion.div>
+              </div>
             )}
-          </AnimatePresence>
         </div>
         
         {/* Mobile Profile Avatar */}
@@ -313,22 +272,13 @@ export default function Topbar({
       </div>
 
       {/* Search Modal */}
-      <AnimatePresence>
-        {searchModalOpen && (
+      {searchModalOpen && (
           <>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
+            <div
               onClick={() => setSearchModalOpen(false)}
               className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50"
             />
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: -20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: -20 }}
-              className="fixed top-[20%] left-1/2 -translate-x-1/2 w-full max-w-2xl bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 z-50 overflow-hidden"
-            >
+            <div className="fixed top-[20%] left-1/2 -translate-x-1/2 w-full max-w-2xl bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 z-50 overflow-hidden">
               <div className="p-4 border-b border-slate-200 dark:border-slate-700">
                 <div className="relative">
                   <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500" size={20} />
@@ -408,10 +358,9 @@ export default function Topbar({
                   </div>
                 )}
               </div>
-            </motion.div>
+            </div>
           </>
         )}
-      </AnimatePresence>
     </header>
   );
 }

@@ -1,20 +1,13 @@
 import React from 'react';
-import { motion } from 'motion/react';
 import { User as UserIcon, CheckCircle } from 'lucide-react';
-import { containerVariants, itemVariants } from '../lib/animations';
 import { SettingsSection } from '../components/settings';
 import { ProfileSettings } from '../components/settings/ProfileSettings';
 
 export default function ProfilePage() {
   return (
-    <motion.div 
-      variants={containerVariants}
-      initial="hidden"
-      animate="show"
-      className="w-full space-y-6"
-    >
+    <div className="w-full space-y-6">
       {/* Header */}
-      <motion.div variants={itemVariants} className="flex flex-col gap-4 pb-4">
+      <div className="flex flex-col gap-4 pb-4">
         <div>
           <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-slate-900 via-indigo-900 to-purple-900 dark:from-white dark:via-indigo-200 dark:to-purple-200">
             Profil
@@ -27,7 +20,7 @@ export default function ProfilePage() {
             </span>
           </p>
         </div>
-      </motion.div>
+      </div>
 
       {/* Content */}
       <SettingsSection
@@ -38,6 +31,6 @@ export default function ProfilePage() {
       >
         <ProfileSettings />
       </SettingsSection>
-    </motion.div>
+    </div>
   );
 }

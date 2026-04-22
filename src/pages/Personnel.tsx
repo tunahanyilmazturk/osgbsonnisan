@@ -1,8 +1,6 @@
 import React, { useState, useRef } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
 import { Plus, Edit, Trash2, Activity, X, LayoutGrid, List } from 'lucide-react';
 import { Button, ToastContainer } from '../components/ui';
-import { containerVariants, itemVariants } from '../lib/animations';
 import { PersonnelCard, PersonnelModal, PersonnelFilters, PersonnelHeader, PersonnelListItem, PersonnelPagination } from '../components/personnel';
 import { Staff, initialStaff, staffPositions } from '../constants/mockData';
 import { exportToExcelAdvanced, importFromExcelAdvanced } from '../lib/excel';
@@ -10,7 +8,6 @@ import type { ToastType } from '../components/ui/Toast';
 
 export default function PersonnelPage() {
   const [staff, setStaff] = useState<Staff[]>(initialStaff);
-  const [filteredStaff, setFilteredStaff] = useState<Staff[]>(initialStaff);
   const [selectedPosition, setSelectedPosition] = useState('Tümü');
   const [searchQuery, setSearchQuery] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
@@ -34,6 +31,10 @@ export default function PersonnelPage() {
   const [showResetModal, setShowResetModal] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
+  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
+  const [showPositionPanel, setShowPositionPanel] = useState(false);
+  const [dateRange, setDateRange] = useState<{ start: string; end: string }>({ start: '', end: '' });
+  const [selectedStatus, setSelectedStatus] = useState<'Tümü' | 'active' | 'inactive'>('Tümü');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [toasts, setToasts] = useState<Array<{ id: string; type: ToastType; message: string }>>([]);
 
@@ -59,22 +60,42 @@ export default function PersonnelPage() {
 
   const handleFilter = (position: string) => {
     setSelectedPosition(position);
-    const filtered = position === 'Tümü' 
-      ? staff 
-      : staff.filter(s => s.position === position);
-    setFilteredStaff(filtered);
   };
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
-    const filtered = staff.filter(s => 
-      s.firstName.toLowerCase().includes(query.toLowerCase()) ||
-      s.lastName.toLowerCase().includes(query.toLowerCase()) ||
-      s.email.toLowerCase().includes(query.toLowerCase()) ||
-      s.phone.includes(query)
-    );
-    setFilteredStaff(filtered);
   };
+
+  // Apply all filters
+  const filteredStaff = staff
+    .filter(s => 
+      s.firstName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      s.lastName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      s.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      s.phone.includes(searchQuery)
+    )
+    .filter(s => 
+      selectedPosition === 'Tümü' || s.position === selectedPosition
+    )
+    .filter(s => {
+      if (!dateRange.start && !dateRange.end) return true;
+      const staffDate = new Date(s.startDate);
+      if (dateRange.start) {
+        const startDate = new Date(dateRange.start);
+        startDate.setHours(0, 0, 0, 0);
+        if (staffDate < startDate) return false;
+      }
+      if (dateRange.end) {
+        const endDate = new Date(dateRange.end);
+        endDate.setHours(23, 59, 59, 999);
+        if (staffDate > endDate) return false;
+      }
+      return true;
+    })
+    .filter(s => {
+      if (selectedStatus === 'Tümü') return true;
+      return s.status === selectedStatus;
+    });
 
   const handleDelete = (id: string) => {
     setStaffToDelete(id);
@@ -84,7 +105,6 @@ export default function PersonnelPage() {
   const handleDeleteConfirm = () => {
     if (staffToDelete) {
       setStaff(staff.filter(s => s.id !== staffToDelete));
-      setFilteredStaff(filteredStaff.filter(s => s.id !== staffToDelete));
       setShowDeleteModal(false);
       setStaffToDelete(null);
     }
@@ -117,7 +137,6 @@ export default function PersonnelPage() {
       status: s.status,
     };
     setStaff([...staff, newStaff]);
-    setFilteredStaff([...filteredStaff, newStaff]);
   };
 
   const handleAddSubmit = (e: React.FormEvent) => {
@@ -151,11 +170,9 @@ export default function PersonnelPage() {
 
     if (editingStaff) {
       setStaff(staff.map(s => s.id === editingStaff.id ? newStaff : s));
-      setFilteredStaff(filteredStaff.map(s => s.id === editingStaff.id ? newStaff : s));
       setEditingStaff(null);
     } else {
       setStaff([...staff, newStaff]);
-      setFilteredStaff([...filteredStaff, newStaff]);
     }
 
     setFormData({
@@ -173,9 +190,12 @@ export default function PersonnelPage() {
   const sortedStaff = [...filteredStaff].sort((a, b) => {
     let comparison = 0;
     if (sortBy === 'name') {
-      comparison = `${a.firstName} ${a.lastName}`.localeCompare(`${b.firstName} ${b.lastName}`);
+      comparison = a.firstName.localeCompare(b.firstName, 'tr');
+      if (comparison === 0) {
+        comparison = a.lastName.localeCompare(b.lastName, 'tr');
+      }
     } else if (sortBy === 'position') {
-      comparison = a.position.localeCompare(b.position);
+      comparison = a.position.localeCompare(b.position, 'tr');
     } else if (sortBy === 'startDate') {
       comparison = new Date(a.startDate).getTime() - new Date(b.startDate).getTime();
     }
@@ -219,14 +239,12 @@ export default function PersonnelPage() {
 
   const handleBulkDeleteConfirm = () => {
     setStaff(staff.filter(s => !selectedStaff.has(s.id)));
-    setFilteredStaff(filteredStaff.filter(s => !selectedStaff.has(s.id)));
     setSelectedStaff(new Set());
     setShowBulkDeleteModal(false);
   };
 
   const handleResetConfirm = () => {
     setStaff(initialStaff);
-    setFilteredStaff(initialStaff);
     setSelectedStaff(new Set());
     setShowResetModal(false);
   };
@@ -301,7 +319,6 @@ export default function PersonnelPage() {
 
       const skippedCount = importedStaff.length - newStaff.length;
       setStaff([...staff, ...newStaff]);
-      setFilteredStaff([...filteredStaff, ...newStaff]);
       
       if (skippedCount > 0) {
         showToast('info', `${newStaff.length} yeni personel eklendi, ${skippedCount} personel zaten mevcut olduğu için atlandı.`);
@@ -316,14 +333,9 @@ export default function PersonnelPage() {
   };
 
   return (
-    <motion.div 
-      variants={containerVariants}
-      initial="hidden"
-      animate="show"
-      className="w-full space-y-6"
-    >
+    <div className="w-full space-y-6">
       {/* Header */}
-      <motion.div variants={itemVariants} className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-slate-900 via-indigo-900 to-purple-900 dark:from-white dark:via-indigo-200 dark:to-purple-200 pb-1">
             Personeller
@@ -349,7 +361,7 @@ export default function PersonnelPage() {
           onChange={handleFileChange}
           className="hidden"
         />
-      </motion.div>
+      </div>
 
       {/* Filters */}
       <PersonnelFilters
@@ -363,11 +375,63 @@ export default function PersonnelPage() {
         onSortChange={setSortBy}
         sortOrder={sortOrder}
         onSortOrderChange={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
+        showAdvancedFilters={showAdvancedFilters}
+        onToggleAdvancedFilters={() => setShowAdvancedFilters(!showAdvancedFilters)}
+        showPositionPanel={showPositionPanel}
+        onTogglePositionPanel={() => setShowPositionPanel(!showPositionPanel)}
       />
+
+      {/* Advanced Filters */}
+      {showAdvancedFilters && (
+        <div className="bg-gradient-to-br from-white/95 to-white/90 dark:from-slate-800/95 dark:to-slate-800/90 backdrop-blur-xl rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.08)] dark:shadow-[0_4px_30px_rgba(0,0,0,0.4)] border border-slate-200/60 dark:border-slate-700/60 p-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">İşe Başlama Tarihi Aralığı</label>
+              <div className="flex gap-2">
+                <input
+                  type="date"
+                  value={dateRange.start}
+                  onChange={(e) => setDateRange({ ...dateRange, start: e.target.value })}
+                  className="flex-1 px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                />
+                <input
+                  type="date"
+                  value={dateRange.end}
+                  onChange={(e) => setDateRange({ ...dateRange, end: e.target.value })}
+                  className="flex-1 px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                />
+              </div>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Durum</label>
+              <select
+                value={selectedStatus}
+                onChange={(e) => setSelectedStatus(e.target.value as 'Tümü' | 'active' | 'inactive')}
+                className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+              >
+                <option value="Tümü">Tümü</option>
+                <option value="active">Aktif</option>
+                <option value="inactive">Pasif</option>
+              </select>
+            </div>
+          </div>
+          <div className="flex justify-end mt-4">
+            <Button
+              variant="secondary"
+              onClick={() => {
+                setDateRange({ start: '', end: '' });
+                setSelectedStatus('Tümü');
+              }}
+            >
+              Filtreleri Temizle
+            </Button>
+          </div>
+        </div>
+      )}
 
       {/* Staff Grid/List */}
       {viewMode === 'grid' ? (
-        <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {paginatedStaff.map((s, index) => (
             <PersonnelCard
               key={s.id}
@@ -380,9 +444,9 @@ export default function PersonnelPage() {
               index={index}
             />
           ))}
-        </motion.div>
+        </div>
       ) : (
-        <motion.div variants={itemVariants} className="bg-gradient-to-br from-white/90 to-white/70 dark:from-slate-800/90 dark:to-slate-800/70 backdrop-blur-xl rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.08)] dark:shadow-[0_4px_30px_rgba(0,0,0,0.3)] border border-slate-200/60 dark:border-slate-700/60 overflow-hidden">
+        <div className="bg-gradient-to-br from-white/90 to-white/70 dark:from-slate-800/90 dark:to-slate-800/70 backdrop-blur-xl rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.08)] dark:shadow-[0_4px_30px_rgba(0,0,0,0.3)] border border-slate-200/60 dark:border-slate-700/60 overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
@@ -420,7 +484,7 @@ export default function PersonnelPage() {
               </tbody>
             </table>
           </div>
-        </motion.div>
+        </div>
       )}
 
       {/* Pagination */}
@@ -457,19 +521,14 @@ export default function PersonnelPage() {
 
       {/* Delete Confirmation Modal */}
       {showDeleteModal && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
+        <div
           className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
           onClick={() => {
             setShowDeleteModal(false);
             setStaffToDelete(null);
           }}
         >
-          <motion.div
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
+          <div
             className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl p-6 w-full max-w-md relative"
             onClick={(e) => e.stopPropagation()}
           >
@@ -501,24 +560,19 @@ export default function PersonnelPage() {
                 Sil
               </Button>
             </div>
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
       )}
 
       {/* Bulk Delete Confirmation Modal */}
       {showBulkDeleteModal && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
+        <div
           className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
           onClick={() => {
             setShowBulkDeleteModal(false);
           }}
         >
-          <motion.div
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
+          <div
             className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl p-6 w-full max-w-md relative"
             onClick={(e) => e.stopPropagation()}
           >
@@ -549,24 +603,19 @@ export default function PersonnelPage() {
                 Sil
               </Button>
             </div>
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
       )}
 
       {/* Reset Confirmation Modal */}
       {showResetModal && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
+        <div
           className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
           onClick={() => {
             setShowResetModal(false);
           }}
         >
-          <motion.div
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
+          <div
             className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl p-6 w-full max-w-md relative"
             onClick={(e) => e.stopPropagation()}
           >
@@ -597,12 +646,12 @@ export default function PersonnelPage() {
                 Sıfırla
               </Button>
             </div>
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
       )}
       
       {/* Toast Container */}
       <ToastContainer toasts={toasts} removeToast={removeToast} />
-    </motion.div>
+    </div>
   );
 }

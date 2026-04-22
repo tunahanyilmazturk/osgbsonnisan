@@ -1,5 +1,4 @@
 import React from 'react';
-import { motion } from 'motion/react';
 import { Activity, ChevronRight } from 'lucide-react';
 import { Badge } from '../ui/Badge';
 import { generateAvatar } from '../../utils/helpers';
@@ -13,12 +12,8 @@ export function ScreeningList({ screenings }: ScreeningListProps) {
   return (
     <div className="space-y-3 relative z-10 flex-1">
       {screenings.map((scan, i) => (
-        <motion.div
+        <div
           key={i}
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: i * 0.05, type: "spring" as const, stiffness: 300, damping: 24 }}
-          whileHover={{ scale: 1.005, x: 2 }}
           className="flex items-center justify-between p-4 sm:p-3 bg-gradient-to-r from-white/90 to-white/70 dark:from-slate-800/90 dark:to-slate-800/70 backdrop-blur-sm border border-slate-200/60 dark:border-slate-700/60 hover:border-indigo-300/50 dark:hover:border-indigo-500/30 hover:shadow-lg hover:shadow-indigo-500/10 dark:hover:shadow-indigo-500/20 rounded-2xl transition-all group cursor-pointer relative overflow-hidden"
         >
           <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/0 via-purple-500/0 to-indigo-500/0 group-hover:from-indigo-500/5 group-hover:via-purple-500/5 group-hover:to-indigo-500/5 transition-all duration-300 pointer-events-none" />
@@ -44,7 +39,7 @@ export function ScreeningList({ screenings }: ScreeningListProps) {
               <Activity size={18} />
             </button>
           </div>
-        </motion.div>
+        </div>
       ))}
     </div>
   );

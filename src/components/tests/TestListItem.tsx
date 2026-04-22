@@ -1,5 +1,4 @@
 import React from 'react';
-import { motion } from 'motion/react';
 import { Edit, Trash2, Copy, Beaker } from 'lucide-react';
 
 interface TestListItemProps {
@@ -32,11 +31,8 @@ export default function TestListItem({
   index,
 }: TestListItemProps) {
   return (
-    <motion.tr
+    <tr
       key={test.id}
-      initial={{ opacity: 0, x: -20 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ delay: index * 0.05 }}
       className="border-b border-slate-200 dark:border-slate-700/50 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors"
     >
       <td className="p-4">
@@ -76,6 +72,6 @@ export default function TestListItem({
           </button>
         </div>
       </td>
-    </motion.tr>
+    </tr>
   );
 }

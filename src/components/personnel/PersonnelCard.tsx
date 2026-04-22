@@ -1,5 +1,4 @@
 import React from 'react';
-import { motion } from 'motion/react';
 import { Edit, Trash2, User, Phone, Mail, Calendar, Building2, CheckCircle2, XCircle, Stethoscope, Copy } from 'lucide-react';
 import { Staff } from '../../constants/mockData';
 
@@ -40,11 +39,8 @@ export default function PersonnelCard({ staff, onEdit, onDelete, onCopy, selecte
   const initials = `${staff.firstName.charAt(0)}${staff.lastName.charAt(0)}`;
 
   return (
-    <motion.div
+    <div
       key={staff.id}
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.05 }}
       className="bg-gradient-to-br from-white/95 to-white/90 dark:from-slate-800/95 dark:to-slate-800/90 backdrop-blur-xl rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.08)] dark:shadow-[0_4px_30px_rgba(0,0,0,0.4)] border border-slate-200/60 dark:border-slate-700/60 p-5 hover:shadow-xl hover:shadow-indigo-500/10 dark:hover:shadow-indigo-500/20 transition-all group relative overflow-hidden"
     >
       <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/0 via-purple-500/0 to-indigo-500/0 group-hover:from-indigo-500/5 group-hover:via-purple-500/5 group-hover:to-indigo-500/5 dark:group-hover:from-indigo-500/10 dark:group-hover:via-purple-500/10 dark:group-hover:to-indigo-500/10 transition-all duration-300 pointer-events-none" />
@@ -86,6 +82,6 @@ export default function PersonnelCard({ staff, onEdit, onDelete, onCopy, selecte
           </div>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }

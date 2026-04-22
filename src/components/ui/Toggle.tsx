@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { motion } from 'motion/react';
 
 interface ToggleProps {
   checked: boolean;
@@ -42,13 +41,9 @@ export function Toggle({ checked, onChange, label, description, disabled = false
         } ${disabled ? 'cursor-not-allowed' : 'cursor-pointer'}`}
         disabled={disabled}
       >
-        <motion.span
-          animate={{
-            x: checked ? 20 : 4
-          }}
-          transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-          className={`inline-block h-4 w-4 transform rounded-full bg-white shadow-lg ${
-            checked ? 'shadow-indigo-500/50' : 'shadow-slate-400/50'
+        <span
+          className={`inline-block h-4 w-4 transform rounded-full bg-white shadow-lg transition-transform ${
+            checked ? 'translate-x-5 shadow-indigo-500/50' : 'translate-x-1 shadow-slate-400/50'
           }`}
         />
       </button>

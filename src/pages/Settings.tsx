@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
 import { Bell, Palette, Shield, Building2, CheckCircle, ChevronRight } from 'lucide-react';
-import { containerVariants, itemVariants } from '../lib/animations';
 import { SettingsSection, NotificationSettings, AppearanceSettings, SecuritySettings, OrganizationSettings } from '../components/settings';
 
 export default function SettingsPage() {
@@ -15,14 +13,9 @@ export default function SettingsPage() {
   ];
 
   return (
-    <motion.div 
-      variants={containerVariants}
-      initial="hidden"
-      animate="show"
-      className="w-full space-y-6"
-    >
+    <div className="w-full space-y-6">
       {/* Header */}
-      <motion.div variants={itemVariants} className="flex items-center justify-between pb-4">
+      <div className="flex items-center justify-between pb-4">
         <div>
           <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-slate-900 via-indigo-900 to-purple-900 dark:from-white dark:via-indigo-200 dark:to-purple-200">
             Ayarlar
@@ -35,25 +28,20 @@ export default function SettingsPage() {
             </span>
           </p>
         </div>
-      </motion.div>
+      </div>
 
       {/* Sidebar + Content Layout */}
       <div className="flex gap-6">
         {/* Sidebar */}
-        <motion.div 
-          variants={itemVariants}
-          className="w-72 shrink-0 hidden lg:block"
-        >
+        <div className="w-72 shrink-0 hidden lg:block">
           <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-4 space-y-2 sticky top-24 shadow-lg shadow-slate-200/50 dark:shadow-black/20">
             <h3 className="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-3 px-2">
               Ayarlar
             </h3>
             {sidebarItems.map((item) => (
-              <motion.button
+              <button
                 key={item.id}
                 onClick={() => setActiveTab(item.id)}
-                whileHover={{ x: 4 }}
-                whileTap={{ scale: 0.98 }}
                 className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl transition-all relative overflow-hidden group ${
                   activeTab === item.id
                     ? 'bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-500/20 dark:to-purple-500/20 text-indigo-700 dark:text-indigo-300 font-semibold shadow-md'
@@ -61,11 +49,8 @@ export default function SettingsPage() {
                 }`}
               >
                 {activeTab === item.id && (
-                  <motion.div
-                    layoutId="activeIndicator"
+                  <div
                     className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-indigo-500 to-purple-500 rounded-r-full"
-                    initial={false}
-                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
                   />
                 )}
                 <div className={`w-9 h-9 rounded-lg flex items-center justify-center transition-colors ${
@@ -81,28 +66,18 @@ export default function SettingsPage() {
                   <p className="text-sm font-medium">{item.label}</p>
                   <p className="text-xs opacity-70">{item.description}</p>
                 </div>
-                <AnimatePresence>
-                  {activeTab === item.id && (
-                    <motion.div
-                      initial={{ opacity: 0, x: -10 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: -10 }}
-                      className="text-indigo-600 dark:text-indigo-400"
-                    >
-                      <ChevronRight size={16} />
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </motion.button>
+                {activeTab === item.id && (
+                  <div className="text-indigo-600 dark:text-indigo-400">
+                    <ChevronRight size={16} />
+                  </div>
+                )}
+              </button>
             ))}
           </div>
-        </motion.div>
+        </div>
 
         {/* Mobile Tabs */}
-        <motion.div 
-          variants={itemVariants}
-          className="lg:hidden w-full"
-        >
+        <div className="lg:hidden w-full">
           <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
             {sidebarItems.map((item) => (
               <button
@@ -119,7 +94,7 @@ export default function SettingsPage() {
               </button>
             ))}
           </div>
-        </motion.div>
+        </div>
 
         {/* Content */}
         <div className="flex-1 min-w-0">
@@ -168,6 +143,6 @@ export default function SettingsPage() {
           )}
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }

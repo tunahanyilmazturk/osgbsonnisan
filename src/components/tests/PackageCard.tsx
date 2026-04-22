@@ -1,5 +1,4 @@
 import React from 'react';
-import { motion } from 'motion/react';
 import { Edit, Trash2, Package } from 'lucide-react';
 import { TestPackage } from '../../constants/mockData';
 
@@ -17,10 +16,8 @@ export default function PackageCard({
   onDelete,
 }: PackageCardProps) {
   return (
-    <motion.div
+    <div
       key={pkg.id}
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
       className="bg-gradient-to-br from-white/95 to-white/90 dark:from-slate-800/95 dark:to-slate-800/90 backdrop-blur-xl rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.08)] dark:shadow-[0_4px_30px_rgba(0,0,0,0.4)] border border-slate-200/60 dark:border-slate-700/60 p-5"
     >
       <div className="flex items-start justify-between mb-4">
@@ -67,6 +64,6 @@ export default function PackageCard({
         </div>
         <span className="text-xs text-slate-400 dark:text-slate-500">Toplam fiyat</span>
       </div>
-    </motion.div>
+    </div>
   );
 }

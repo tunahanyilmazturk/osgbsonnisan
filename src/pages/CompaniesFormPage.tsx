@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, CheckCircle2, XCircle, ChevronRight, Circle, Check } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, XCircle, ChevronRight, Check } from 'lucide-react';
 import { Input, Button } from '../components/ui';
 import { companySectors, Company, initialCompanies } from '../constants/mockData';
 
@@ -131,12 +130,7 @@ export default function CompaniesFormPage() {
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
-      className="flex min-h-screen"
-    >
+    <div className="flex min-h-screen">
       {/* Sidebar */}
       <div className="w-72 bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 p-6 flex flex-col">
         <button
@@ -254,12 +248,8 @@ export default function CompaniesFormPage() {
           </div>
         </div>
 
-        <motion.div
+        <div
           key={currentStep}
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: -20 }}
-          transition={{ duration: 0.3 }}
           className="max-w-3xl mx-auto"
         >
           <form onSubmit={handleSubmit}>
@@ -531,8 +521,8 @@ export default function CompaniesFormPage() {
             </div>
           </div>
           </form>
-        </motion.div>
+        </div>
       </div>
-    </motion.div>
+    </div>
   );
 }

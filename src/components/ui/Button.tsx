@@ -1,5 +1,4 @@
 import React from 'react';
-import { motion } from 'motion/react';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'ghost';
@@ -31,19 +30,12 @@ export function Button({
   };
   
   return (
-    <motion.button
-      whileHover={{ scale: 1.02 }}
-      whileTap={{ scale: 0.98 }}
+    <button
       className={`${baseStyles} ${variants[variant]} ${sizes[size]} ${className}`}
       {...props}
     >
-      <motion.div
-        className="absolute inset-0 bg-white/20 rounded-xl opacity-0"
-        whileTap={{ opacity: 1, scale: 1.5 }}
-        transition={{ duration: 0.3 }}
-      />
       {icon}
       {children}
-    </motion.button>
+    </button>
   );
 }

@@ -1,29 +1,29 @@
 import React from 'react';
 
-interface PersonnelPaginationProps {
+interface ProposalsPaginationProps {
   currentPage: number;
   totalPages: number;
-  totalStaff: number;
+  totalProposals: number;
   onPageChange: (page: number) => void;
   itemsPerPage: number;
   onItemsPerPageChange: (value: number) => void;
 }
 
-export default function PersonnelPagination({
+export default function ProposalsPagination({
   currentPage,
   totalPages,
-  totalStaff,
+  totalProposals,
   onPageChange,
   itemsPerPage,
   onItemsPerPageChange,
-}: PersonnelPaginationProps) {
+}: ProposalsPaginationProps) {
   if (totalPages <= 1) return null;
 
   return (
     <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
       <div className="flex flex-col sm:flex-row sm:items-center gap-4 w-full lg:w-auto">
         <div className="text-sm text-slate-500 dark:text-slate-400">
-          Toplam {totalStaff} personel
+          Toplam {totalProposals} teklif
         </div>
         <div className="flex items-center gap-2">
           <span className="text-sm text-slate-500 dark:text-slate-400">Sayfa başına:</span>

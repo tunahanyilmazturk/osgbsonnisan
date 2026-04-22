@@ -1,5 +1,4 @@
 import React from 'react';
-import { motion } from 'motion/react';
 import { Edit, Trash2, Copy, Building2, Users, Phone, Mail, Calendar, CheckCircle2, XCircle } from 'lucide-react';
 import { Company } from '../../constants/mockData';
 
@@ -29,11 +28,8 @@ export default function CompaniesListItem({ company, onEdit, onDelete, onCopy, s
   const colors = sectorColors[company.sector] || sectorColors['Tümü'];
 
   return (
-    <motion.tr
+    <tr
       key={company.id}
-      initial={{ opacity: 0, x: -20 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ delay: index * 0.05 }}
       className="border-b border-slate-200 dark:border-slate-700/50 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors"
     >
       <td className="p-4">
@@ -99,6 +95,6 @@ export default function CompaniesListItem({ company, onEdit, onDelete, onCopy, s
           </button>
         </div>
       </td>
-    </motion.tr>
+    </tr>
   );
 }

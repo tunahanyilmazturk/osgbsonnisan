@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
 import { X, User, Phone, Mail, Building2, Calendar, CheckCircle2, XCircle } from 'lucide-react';
 import { Input } from '../ui';
 import { staffPositions } from '../../constants/mockData';
@@ -52,22 +51,14 @@ export default function PersonnelModal({
   if (!show) return null;
 
   return (
-    <AnimatePresence>
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        className="fixed inset-0 bg-black/60 dark:bg-black/70 backdrop-blur-md flex items-center justify-center z-[100] p-4"
-        onClick={onClose}
+    <div
+      className="fixed inset-0 bg-black/60 dark:bg-black/70 backdrop-blur-md flex items-center justify-center z-[100] p-4"
+      onClick={onClose}
+    >
+      <div
+        className="bg-white dark:bg-slate-800/95 rounded-2xl shadow-2xl dark:shadow-black/50 p-6 w-full max-w-4xl relative border border-slate-200 dark:border-slate-700"
+        onClick={(e) => e.stopPropagation()}
       >
-        <motion.div
-          initial={{ scale: 0.9, opacity: 0, y: 20 }}
-          animate={{ scale: 1, opacity: 1, y: 0 }}
-          exit={{ scale: 0.9, opacity: 0, y: 20 }}
-          transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-          className="bg-white dark:bg-slate-800/95 rounded-2xl shadow-2xl dark:shadow-black/50 p-6 w-full max-w-4xl relative border border-slate-200 dark:border-slate-700"
-          onClick={(e) => e.stopPropagation()}
-        >
           <button
             onClick={onClose}
             className="absolute top-4 right-4 p-2 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
@@ -203,8 +194,7 @@ export default function PersonnelModal({
               </Button>
             </div>
           </form>
-        </motion.div>
-      </motion.div>
-    </AnimatePresence>
+      </div>
+    </div>
   );
 }

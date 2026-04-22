@@ -1,4 +1,4 @@
-import { LayoutDashboard, Calendar, Stethoscope, FileText, Building2, Users, Settings, Beaker, FileCheck, User, Home, Workflow, MoreHorizontal } from 'lucide-react';
+import { LayoutDashboard, Calendar, Stethoscope, FileText, Building2, Users, Settings, Beaker, FileCheck, User, Home, Workflow, MoreHorizontal, Package } from 'lucide-react';
 import React from 'react';
 
 export const menuGroups = [
@@ -18,6 +18,7 @@ export const menuGroups = [
       { name: 'Teklifler', path: '/proposals', icon: <FileCheck size={20} /> },
       { name: 'Personeller', path: '/personnel', icon: <Users size={20} /> },
       { name: 'Testler', path: '/tests', icon: <Beaker size={20} /> },
+      { name: 'Paketler', path: '/packages', icon: <Package size={20} /> },
       { name: 'Taramalar', path: '/screenings', icon: <Stethoscope size={20} />, badge: '45+', badgeColor: 'bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-500/20' },
     ]
   },

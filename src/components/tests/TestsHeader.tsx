@@ -1,5 +1,4 @@
 import React from 'react';
-import { motion } from 'motion/react';
 import { Plus, Trash2, LayoutGrid, List, Download, Upload } from 'lucide-react';
 import { Button } from '../ui';
 
@@ -29,7 +28,7 @@ export default function TestsHeader({
   onAddPackage,
 }: TestsHeaderProps) {
   return (
-    <motion.div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+    <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
       <div className="flex items-center gap-3 w-full lg:w-auto overflow-x-auto pb-2 lg:pb-0">
         {/* Tabs */}
         <div className="flex items-center bg-slate-100 dark:bg-slate-800 rounded-xl p-1" role="tablist">
@@ -60,11 +59,7 @@ export default function TestsHeader({
       
       <div className="flex flex-wrap gap-2 lg:gap-3 w-full lg:w-auto">
         {activeTab === 'tests' && selectedTests.size > 0 && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="flex items-center gap-2 px-3 py-2 bg-rose-100 dark:bg-rose-500/10 border border-rose-200 dark:border-rose-500/30 rounded-xl shrink-0"
-          >
+          <div className="flex items-center gap-2 px-3 py-2 bg-rose-100 dark:bg-rose-500/10 border border-rose-200 dark:border-rose-500/30 rounded-xl shrink-0">
             <span className="text-sm font-semibold text-rose-700 dark:text-rose-400">{selectedTests.size} seçili</span>
             <button
               onClick={onBulkDelete}
@@ -72,7 +67,7 @@ export default function TestsHeader({
             >
               <Trash2 size={14} />
             </button>
-          </motion.div>
+          </div>
         )}
         {activeTab === 'tests' && (
           <>
@@ -117,6 +112,6 @@ export default function TestsHeader({
           </Button>
         )}
       </div>
-    </motion.div>
+    </div>
   );
 }

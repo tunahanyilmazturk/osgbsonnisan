@@ -1,5 +1,4 @@
 import React from 'react';
-import { motion } from 'motion/react';
 import { X } from 'lucide-react';
 import { Button, Input } from '../ui';
 
@@ -25,16 +24,11 @@ export default function TestModal({
   if (!show) return null;
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
+    <div
       className="fixed inset-0 bg-black/60 dark:bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4"
       onClick={onClose}
     >
-      <motion.div
-        initial={{ scale: 0.9, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
+      <div
         className="bg-white dark:bg-slate-800/95 rounded-2xl shadow-2xl dark:shadow-black/50 p-6 w-full max-w-md relative border border-slate-200 dark:border-slate-700"
         onClick={(e) => e.stopPropagation()}
       >
@@ -91,7 +85,7 @@ export default function TestModal({
             {isEditing ? 'Testi Güncelle' : 'Test Ekle'}
           </Button>
         </form>
-      </motion.div>
-    </motion.div>
+      </div>
+    </div>
   );
 }

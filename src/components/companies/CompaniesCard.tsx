@@ -1,5 +1,4 @@
 import React from 'react';
-import { motion } from 'motion/react';
 import { Edit, Trash2, Copy, Building2, Phone, Mail, Users, Calendar, CheckCircle2, XCircle } from 'lucide-react';
 import { Company } from '../../constants/mockData';
 
@@ -42,11 +41,8 @@ export default function CompaniesCard({ company, onEdit, onDelete, onCopy, selec
   const initials = company.name.split(' ').map(word => word.charAt(0)).join('').slice(0, 2).toUpperCase();
 
   return (
-    <motion.div
+    <div
       key={company.id}
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.05 }}
       className="bg-gradient-to-br from-white/95 to-white/90 dark:from-slate-800/95 dark:to-slate-800/90 backdrop-blur-xl rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.08)] dark:shadow-[0_4px_30px_rgba(0,0,0,0.4)] border border-slate-200/60 dark:border-slate-700/60 p-5 hover:shadow-xl hover:shadow-indigo-500/10 dark:hover:shadow-indigo-500/20 transition-all group relative overflow-hidden"
     >
       <div className="flex items-start justify-between mb-3">
@@ -103,6 +99,6 @@ export default function CompaniesCard({ company, onEdit, onDelete, onCopy, selec
           <span>{new Date(company.createdAt).toLocaleDateString('tr-TR')}</span>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }

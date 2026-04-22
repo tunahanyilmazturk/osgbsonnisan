@@ -1,18 +1,15 @@
-import React, { useState, useRef } from 'react';
-import { motion } from 'motion/react';
-import { Plus, Edit, Trash2, Beaker, Activity, Eye, Stethoscope, Heart, Syringe, X, LayoutGrid, List, Scan, Wind, Copy, Package as PackageIcon } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Plus, Edit, Trash2, Beaker, Activity, Eye, Stethoscope, Heart, Syringe, X, LayoutGrid, List, Scan, Wind, Copy, Search, Download, Upload } from 'lucide-react';
 import { Button, Input, ToastContainer } from '../components/ui';
-import { containerVariants, itemVariants } from '../lib/animations';
-import { TestCard, TestListItem, TestFilters, TestPagination, TestModal, PackageModal, PackageCard, TestsHeader } from '../components/tests';
-import { Test, TestPackage, initialTests, initialPackages, categories } from '../constants/mockData';
+import { TestCard, TestListItem, TestFilters, TestPagination, TestModal } from '../components/tests';
+import { Test, initialTests, categories } from '../constants/mockData';
 import { exportToExcelAdvanced, importFromExcelAdvanced } from '../lib/excel';
 import type { ToastType } from '../components/ui/Toast';
 
 export default function TestsPage() {
-  const [activeTab, setActiveTab] = useState<'tests' | 'packages'>('tests');
+  const navigate = useNavigate();
   const [tests, setTests] = useState<Test[]>(initialTests);
-  const [filteredTests, setFilteredTests] = useState<Test[]>(initialTests);
-  const [packages, setPackages] = useState<TestPackage[]>(initialPackages);
   const [selectedCategory, setSelectedCategory] = useState('Tümü');
   const [searchQuery, setSearchQuery] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
@@ -27,11 +24,30 @@ export default function TestsPage() {
   const [showBulkDeleteModal, setShowBulkDeleteModal] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
-  const [showPackageModal, setShowPackageModal] = useState(false);
-  const [packageFormData, setPackageFormData] = useState({ name: '', selectedTestIds: new Set<string>(), testPrices: {} as { [testId: string]: number }, discountPercentage: 0 });
-  const [editingPackage, setEditingPackage] = useState<TestPackage | null>(null);
+  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
+  const [showCategoryPanel, setShowCategoryPanel] = useState(false);
+  const [priceRange, setPriceRange] = useState<{ min: number; max: number }>({ min: 0, max: 0 });
+  const [selectedUnit, setSelectedUnit] = useState<'Tümü' | '₺' | '€' | '$'>('Tümü');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [toasts, setToasts] = useState<Array<{ id: string; type: ToastType; message: string }>>([]);
+
+  // Load tests from localStorage on mount
+  useEffect(() => {
+    const savedTests = localStorage.getItem('tests');
+    if (savedTests) {
+      try {
+        const parsedTests = JSON.parse(savedTests);
+        setTests(parsedTests);
+      } catch (e) {
+        console.error('Error loading tests:', e);
+      }
+    }
+  }, []);
+
+  // Save tests to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem('tests', JSON.stringify(tests));
+  }, [tests]);
 
   const showToast = (type: ToastType, message: string) => {
     const id = Date.now().toString();
@@ -64,20 +80,31 @@ export default function TestsPage() {
 
   const handleFilter = (category: string) => {
     setSelectedCategory(category);
-    const filtered = category === 'Tümü' 
-      ? tests 
-      : tests.filter(test => test.category === category);
-    setFilteredTests(filtered);
   };
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
-    const filtered = tests.filter(test => 
-      test.name.toLowerCase().includes(query.toLowerCase()) ||
-      test.category.toLowerCase().includes(query.toLowerCase())
-    );
-    setFilteredTests(filtered);
   };
+
+  // Apply all filters
+  const filteredTests = tests
+    .filter(test => 
+      test.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      test.category.toLowerCase().includes(searchQuery.toLowerCase())
+    )
+    .filter(test => 
+      selectedCategory === 'Tümü' || test.category === selectedCategory
+    )
+    .filter(test => {
+      const price = test.price || 0;
+      if (priceRange.min > 0 && price < priceRange.min) return false;
+      if (priceRange.max > 0 && price > priceRange.max) return false;
+      return true;
+    })
+    .filter(test => {
+      if (selectedUnit === 'Tümü') return true;
+      return test.unit === selectedUnit;
+    });
 
   const handleDelete = (id: string) => {
     setTestToDelete(id);
@@ -87,7 +114,6 @@ export default function TestsPage() {
   const handleDeleteConfirm = () => {
     if (testToDelete) {
       setTests(tests.filter(test => test.id !== testToDelete));
-      setFilteredTests(filteredTests.filter(test => test.id !== testToDelete));
       setShowDeleteModal(false);
       setTestToDelete(null);
     }
@@ -113,11 +139,9 @@ export default function TestsPage() {
 
     if (editingTest) {
       setTests(tests.map(test => test.id === editingTest.id ? newTest : test));
-      setFilteredTests(filteredTests.map(test => test.id === editingTest.id ? newTest : test));
       setEditingTest(null);
     } else {
       setTests([...tests, newTest]);
-      setFilteredTests([...filteredTests, newTest]);
     }
 
     setFormData({ name: '', category: 'Laboratuvar', price: '' });
@@ -127,9 +151,9 @@ export default function TestsPage() {
   const sortedTests = [...filteredTests].sort((a, b) => {
     let comparison = 0;
     if (sortBy === 'name') {
-      comparison = a.name.localeCompare(b.name);
+      comparison = a.name.localeCompare(b.name, 'tr');
     } else if (sortBy === 'category') {
-      comparison = a.category.localeCompare(b.category);
+      comparison = a.category.localeCompare(b.category, 'tr');
     } else if (sortBy === 'price') {
       comparison = a.price - b.price;
     }
@@ -173,7 +197,6 @@ export default function TestsPage() {
 
   const handleBulkDeleteConfirm = () => {
     setTests(tests.filter(test => !selectedTests.has(test.id)));
-    setFilteredTests(filteredTests.filter(test => !selectedTests.has(test.id)));
     setSelectedTests(new Set());
     setShowBulkDeleteModal(false);
   };
@@ -187,7 +210,6 @@ export default function TestsPage() {
       unit: test.unit,
     };
     setTests([...tests, newTest]);
-    setFilteredTests([...filteredTests, newTest]);
   };
 
   const handleExcelExport = () => {
@@ -251,7 +273,6 @@ export default function TestsPage() {
 
       const skippedCount = importedTests.length - newTests.length;
       setTests([...tests, ...newTests]);
-      setFilteredTests([...filteredTests, ...newTests]);
       
       if (skippedCount > 0) {
         showToast('info', `${newTests.length} yeni test eklendi, ${skippedCount} test zaten mevcut olduğu için atlandı.`);
@@ -265,109 +286,68 @@ export default function TestsPage() {
     }
   };
 
-  const handleAddPackage = () => {
-    if (!packageFormData.name || packageFormData.selectedTestIds.size === 0) return;
-
-    const originalPrice = Array.from(packageFormData.selectedTestIds)
-      .reduce((sum, testId) => {
-        const customPrice = packageFormData.testPrices[testId];
-        return sum + (customPrice || 0);
-      }, 0);
-
-    const discountPercentage = packageFormData.discountPercentage || 0;
-    const totalPrice = originalPrice * (1 - discountPercentage / 100);
-
-    const newPackage: TestPackage = {
-      id: Date.now().toString(),
-      name: packageFormData.name,
-      testIds: Array.from(packageFormData.selectedTestIds),
-      testPrices: packageFormData.testPrices,
-      originalPrice,
-      discountPercentage,
-      totalPrice,
-    };
-
-    if (editingPackage) {
-      setPackages(packages.map(pkg => pkg.id === editingPackage.id ? newPackage : pkg));
-      setEditingPackage(null);
-    } else {
-      setPackages([...packages, newPackage]);
-    }
-
-    setPackageFormData({ name: '', selectedTestIds: new Set<string>(), testPrices: {} as { [testId: string]: number }, discountPercentage: 0 });
-    setShowPackageModal(false);
-  };
-
-  const handleEditPackage = (pkg: TestPackage) => {
-    setEditingPackage(pkg);
-    setPackageFormData({ name: pkg.name, selectedTestIds: new Set(pkg.testIds), testPrices: pkg.testPrices, discountPercentage: pkg.discountPercentage });
-    setShowPackageModal(true);
-  };
-
-  const handleDeletePackage = (id: string) => {
-    setPackages(packages.filter(pkg => pkg.id !== id));
-  };
-
-  const handleTestSelection = (testId: string) => {
-    const newSelected = new Set(packageFormData.selectedTestIds);
-    const newTestPrices = { ...packageFormData.testPrices };
-    const test = tests.find(t => t.id === testId);
-    
-    if (newSelected.has(testId)) {
-      newSelected.delete(testId);
-      delete newTestPrices[testId];
-    } else {
-      newSelected.add(testId);
-      if (test) {
-        newTestPrices[testId] = test.price;
-      }
-    }
-    setPackageFormData({ ...packageFormData, selectedTestIds: newSelected, testPrices: newTestPrices });
-  };
-
-  const handlePriceChange = (testId: string, newPrice: string) => {
-    const newTestPrices = { ...packageFormData.testPrices };
-    newTestPrices[testId] = parseFloat(newPrice) || 0;
-    setPackageFormData({ ...packageFormData, testPrices: newTestPrices });
-  };
-
-  const handleRemoveTest = (testId: string) => {
-    const newSelected = new Set(packageFormData.selectedTestIds);
-    const newTestPrices = { ...packageFormData.testPrices };
-    newSelected.delete(testId);
-    delete newTestPrices[testId];
-    setPackageFormData({ ...packageFormData, selectedTestIds: newSelected, testPrices: newTestPrices });
-  };
 
   return (
-    <motion.div 
-      variants={containerVariants}
-      initial="hidden"
-      animate="show"
-      className="w-full space-y-6"
-    >
+    <div className="w-full space-y-6">
       {/* Header */}
-      <motion.div variants={itemVariants} className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-slate-900 via-indigo-900 to-purple-900 dark:from-white dark:via-indigo-200 dark:to-purple-200 pb-1">
             Testler
           </h1>
           <p className="text-slate-500 dark:text-slate-400 text-sm mt-2 font-medium">
-            Tarama ve teklif için kullanılan testler ve paketler
+            Tarama ve teklif için kullanılan testler
           </p>
         </div>
-        <TestsHeader
-          activeTab={activeTab}
-          onTabChange={setActiveTab}
-          selectedTests={selectedTests}
-          onBulkDelete={() => setShowBulkDeleteModal(true)}
-          onExcelExport={handleExcelExport}
-          onExcelImport={handleExcelImport}
-          viewMode={viewMode}
-          onViewModeChange={setViewMode}
-          onAddTest={() => setShowAddModal(true)}
-          onAddPackage={() => setShowPackageModal(true)}
-        />
+        <div className="flex items-center gap-3">
+          <Button
+            variant="secondary"
+            icon={<Trash2 size={16} />}
+            onClick={() => setShowBulkDeleteModal(true)}
+            disabled={selectedTests.size === 0}
+            className="shrink-0"
+          >
+            Toplu Sil
+          </Button>
+          <Button
+            variant="secondary"
+            icon={<Download size={16} />}
+            onClick={handleExcelExport}
+            className="shrink-0"
+          >
+            Excel
+          </Button>
+          <Button
+            variant="secondary"
+            icon={<Upload size={16} />}
+            onClick={handleExcelImport}
+            className="shrink-0"
+          >
+            İçe Aktar
+          </Button>
+          <div className="flex items-center bg-slate-100 dark:bg-slate-800 rounded-xl p-1 shrink-0">
+            <button
+              onClick={() => setViewMode('grid')}
+              className={`p-2 rounded-lg transition-colors ${viewMode === 'grid' ? 'bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-400 shadow-sm' : 'text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300'}`}
+            >
+              <LayoutGrid size={18} />
+            </button>
+            <button
+              onClick={() => setViewMode('list')}
+              className={`p-2 rounded-lg transition-colors ${viewMode === 'list' ? 'bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-400 shadow-sm' : 'text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300'}`}
+            >
+              <List size={18} />
+            </button>
+          </div>
+          <Button
+            variant="primary"
+            icon={<Plus size={16} />}
+            onClick={() => setShowAddModal(true)}
+            className="bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 shadow-lg shadow-indigo-500/20 shrink-0"
+          >
+            Yeni Test
+          </Button>
+        </div>
         <input
           ref={fileInputRef}
           type="file"
@@ -375,12 +355,10 @@ export default function TestsPage() {
           onChange={handleFileChange}
           className="hidden"
         />
-      </motion.div>
+      </div>
 
-      {activeTab === 'tests' && (
-        <>
-          {/* Filters */}
-          <TestFilters
+      {/* Filters */}
+      <TestFilters
             searchQuery={searchQuery}
             onSearch={handleSearch}
             selectedCategory={selectedCategory}
@@ -391,11 +369,66 @@ export default function TestsPage() {
             onSortChange={setSortBy}
             sortOrder={sortOrder}
             onSortOrderChange={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
+            showAdvancedFilters={showAdvancedFilters}
+            onToggleAdvancedFilters={() => setShowAdvancedFilters(!showAdvancedFilters)}
+            showCategoryPanel={showCategoryPanel}
+            onToggleCategoryPanel={() => setShowCategoryPanel(!showCategoryPanel)}
           />
+
+      {/* Advanced Filters */}
+      {showAdvancedFilters && (
+        <div className="bg-gradient-to-br from-white/95 to-white/90 dark:from-slate-800/95 dark:to-slate-800/90 backdrop-blur-xl rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.08)] dark:shadow-[0_4px_30px_rgba(0,0,0,0.4)] border border-slate-200/60 dark:border-slate-700/60 p-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Fiyat Aralığı</label>
+              <div className="flex gap-2">
+                <input
+                  type="number"
+                  placeholder="Min"
+                  value={priceRange.min || ''}
+                  onChange={(e) => setPriceRange({ ...priceRange, min: Number(e.target.value) })}
+                  className="flex-1 px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                />
+                <input
+                  type="number"
+                  placeholder="Max"
+                  value={priceRange.max || ''}
+                  onChange={(e) => setPriceRange({ ...priceRange, max: Number(e.target.value) })}
+                  className="flex-1 px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                />
+              </div>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Birim</label>
+              <select
+                value={selectedUnit}
+                onChange={(e) => setSelectedUnit(e.target.value as 'Tümü' | '₺' | '€' | '$')}
+                className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+              >
+                <option value="Tümü">Tümü</option>
+                <option value="₺">₺ (TL)</option>
+                <option value="€">€ (Euro)</option>
+                <option value="$">$ (Dolar)</option>
+              </select>
+            </div>
+          </div>
+          <div className="flex justify-end mt-4">
+            <Button
+              variant="secondary"
+              onClick={() => {
+                setPriceRange({ min: 0, max: 0 });
+                setSelectedUnit('Tümü');
+              }}
+            >
+              Filtreleri Temizle
+            </Button>
+          </div>
+        </div>
+      )}
 
       {/* Tests Grid/List */}
       {viewMode === 'grid' ? (
-        <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {paginatedTests.map((test, index) => (
             <TestCard
               key={test.id}
@@ -410,9 +443,9 @@ export default function TestsPage() {
               index={index}
             />
           ))}
-        </motion.div>
+        </div>
       ) : (
-        <motion.div variants={itemVariants} className="bg-gradient-to-br from-white/90 to-white/70 dark:from-slate-800/90 dark:to-slate-800/70 backdrop-blur-xl rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.08)] dark:shadow-[0_4px_30px_rgba(0,0,0,0.3)] border border-slate-200/60 dark:border-slate-700/60 overflow-hidden">
+        <div className="bg-gradient-to-br from-white/90 to-white/70 dark:from-slate-800/90 dark:to-slate-800/70 backdrop-blur-xl rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.08)] dark:shadow-[0_4px_30px_rgba(0,0,0,0.3)] border border-slate-200/60 dark:border-slate-700/60 overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
@@ -449,7 +482,7 @@ export default function TestsPage() {
               </tbody>
             </table>
           </div>
-        </motion.div>
+        </div>
       )}
 
       {/* Pagination */}
@@ -479,19 +512,14 @@ export default function TestsPage() {
 
       {/* Delete Confirmation Modal */}
       {showDeleteModal && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
+        <div
           className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
           onClick={() => {
             setShowDeleteModal(false);
             setTestToDelete(null);
           }}
         >
-          <motion.div
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
+          <div
             className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl p-6 w-full max-w-md relative"
             onClick={(e) => e.stopPropagation()}
           >
@@ -523,24 +551,19 @@ export default function TestsPage() {
                 Sil
               </Button>
             </div>
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
       )}
 
       {/* Bulk Delete Confirmation Modal */}
       {showBulkDeleteModal && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
+        <div
           className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
           onClick={() => {
             setShowBulkDeleteModal(false);
           }}
         >
-          <motion.div
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
+          <div
             className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl p-6 w-full max-w-md relative"
             onClick={(e) => e.stopPropagation()}
           >
@@ -571,68 +594,12 @@ export default function TestsPage() {
                 Sil
               </Button>
             </div>
-          </motion.div>
-        </motion.div>
-      )}
-      </>
-      )}
-
-      {/* Packages Tab Content */}
-      {activeTab === 'packages' && (
-        <motion.div variants={itemVariants} className="space-y-6">
-          <div className="flex items-center justify-between">
-            <h2 className="text-xl font-bold text-slate-900 dark:text-white">Test Paketleri</h2>
-            <Button variant="primary" icon={<Plus size={16} />} onClick={() => setShowPackageModal(true)} className="bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 shadow-lg shadow-indigo-500/20">
-              Yeni Paket Oluştur
-            </Button>
           </div>
-
-          {packages.length === 0 ? (
-            <div className="text-center py-12">
-              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
-                <PackageIcon size={32} className="text-slate-400 dark:text-slate-500" />
-              </div>
-              <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">Henüz paket yok</h3>
-              <p className="text-slate-500 dark:text-slate-400">Test paketi oluşturmak için butona tıklayın</p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {packages.map((pkg) => (
-                <PackageCard
-                  key={pkg.id}
-                  pkg={pkg}
-                  tests={tests}
-                  onEdit={handleEditPackage}
-                  onDelete={handleDeletePackage}
-                />
-              ))}
-            </div>
-          )}
-        </motion.div>
+        </div>
       )}
 
-      {/* Package Modal */}
-      <PackageModal
-        isOpen={showPackageModal}
-        onClose={() => {
-          setShowPackageModal(false);
-          setEditingPackage(null);
-          setPackageFormData({ name: '', selectedTestIds: new Set<string>(), testPrices: {} as { [testId: string]: number }, discountPercentage: 0 });
-        }}
-        onSubmit={(e) => { e.preventDefault(); handleAddPackage(); }}
-        formData={packageFormData}
-        onFormDataChange={setPackageFormData}
-        tests={tests}
-        categoryColors={categoryColors}
-        categoryIcons={categoryIcons}
-        onTestSelection={handleTestSelection}
-        onPriceChange={handlePriceChange}
-        onRemoveTest={handleRemoveTest}
-        isEditing={!!editingPackage}
-      />
-      
       {/* Toast Container */}
       <ToastContainer toasts={toasts} removeToast={removeToast} />
-    </motion.div>
+    </div>
   );
 }

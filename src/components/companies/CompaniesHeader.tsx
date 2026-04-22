@@ -1,5 +1,4 @@
 import React from 'react';
-import { motion } from 'motion/react';
 import { Plus, Trash2, Download, RotateCcw, Grid, List, Upload } from 'lucide-react';
 import { Button } from '../ui';
 
@@ -25,12 +24,10 @@ export default function CompaniesHeader({
   onAddCompany,
 }: CompaniesHeaderProps) {
   return (
-    <motion.div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+    <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
       <div className="flex items-center gap-3 w-full lg:w-auto overflow-x-auto pb-2 lg:pb-0">
         {selectedCount > 0 && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
+          <div
             className="flex items-center gap-2 px-3 py-2 bg-rose-100 dark:bg-rose-500/10 border border-rose-200 dark:border-rose-500/30 rounded-xl shrink-0"
           >
             <span className="text-sm font-semibold text-rose-700 dark:text-rose-400">{selectedCount} seçili</span>
@@ -40,7 +37,7 @@ export default function CompaniesHeader({
             >
               <Trash2 size={14} />
             </button>
-          </motion.div>
+          </div>
         )}
       </div>
       
@@ -82,6 +79,6 @@ export default function CompaniesHeader({
           <span className="sm:hidden">Ekle</span>
         </Button>
       </div>
-    </motion.div>
+    </div>
   );
 }

@@ -1,5 +1,4 @@
 import React from 'react';
-import { motion } from 'motion/react';
 
 interface CompaniesPaginationProps {
   currentPage: number;
@@ -21,7 +20,7 @@ export default function CompaniesPagination({
   if (totalPages <= 1) return null;
 
   return (
-    <motion.div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+    <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
       <div className="flex flex-col sm:flex-row sm:items-center gap-4 w-full lg:w-auto">
         <div className="text-sm text-slate-500 dark:text-slate-400">
           Toplam {totalCompanies} firma
@@ -76,6 +75,6 @@ export default function CompaniesPagination({
           Sonraki
         </button>
       </div>
-    </motion.div>
+    </div>
   );
 }

@@ -1,5 +1,4 @@
 import React from 'react';
-import { motion } from 'motion/react';
 import { Edit, Trash2, User, Stethoscope, CheckCircle2, XCircle, Copy } from 'lucide-react';
 import { Staff } from '../../constants/mockData';
 
@@ -39,11 +38,8 @@ export default function PersonnelListItem({ staff, onEdit, onDelete, onCopy, sel
   const colors = positionColors[staff.position] || positionColors['Yönetici'];
 
   return (
-    <motion.tr
+    <tr
       key={staff.id}
-      initial={{ opacity: 0, x: -20 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ delay: index * 0.05 }}
       className="border-b border-slate-200 dark:border-slate-700/50 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors"
     >
       <td className="p-4">
@@ -100,6 +96,6 @@ export default function PersonnelListItem({ staff, onEdit, onDelete, onCopy, sel
           </button>
         </div>
       </td>
-    </motion.tr>
+    </tr>
   );
 }

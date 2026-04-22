@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
 import { 
   Bell, X, Check, AlertTriangle, Info, CheckCircle2, 
   Clock, ChevronRight, Filter, MoreVertical, Trash2
@@ -138,103 +137,80 @@ export default function NotificationPanel({
         <div className="flex items-center gap-3">
           <h3 className="font-bold text-slate-900 dark:text-white text-lg">Bildirimler</h3>
           {unreadCount > 0 && (
-            <motion.span
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              className="px-2 py-0.5 bg-gradient-to-r from-rose-500 to-rose-600 text-white text-xs font-bold rounded-full"
-            >
+            <span className="px-2 py-0.5 bg-gradient-to-r from-rose-500 to-rose-600 text-white text-xs font-bold rounded-full">
               {unreadCount}
-            </motion.span>
+            </span>
           )}
         </div>
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
+        <button
           onClick={onClearAll}
-          className="text-xs font-semibold text-slate-500 dark:text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 flex items-center gap-1 transition-colors"
+          className="text-xs font-semibold text-slate-500 dark:text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 flex items-center gap-1 transition-colors hover:scale-105"
         >
           <Trash2 size={12} />
           Temizle
-        </motion.button>
+        </button>
       </div>
 
       {/* Filters */}
       <div className="flex gap-2 mb-4 overflow-x-auto pb-2 scrollbar-hide">
         {(['all', 'unread', 'important'] as const).map((f) => (
-          <motion.button
+          <button
             key={f}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
             onClick={() => setFilter(f)}
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all hover:scale-102 ${
               filter === f
                 ? 'bg-gradient-to-r from-indigo-500 to-purple-500 text-white shadow-lg shadow-indigo-500/30'
                 : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'
             }`}
           >
             {f === 'all' ? 'Tümü' : f === 'unread' ? 'Okunmamış' : 'Önemli'}
-          </motion.button>
+          </button>
         ))}
       </div>
 
       {/* Category Filters */}
       <div className="flex gap-2 mb-4 overflow-x-auto pb-2 scrollbar-hide">
-        <motion.button
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
+        <button
           onClick={() => setSelectedCategory('all')}
-          className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${
+          className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all hover:scale-102 ${
             selectedCategory === 'all'
               ? 'bg-slate-900 dark:bg-white text-white dark:text-slate-900'
               : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400'
           }`}
         >
           Tüm Kategoriler
-        </motion.button>
+        </button>
         {Object.entries(categoryConfig).map(([key, config]) => (
-          <motion.button
+          <button
             key={key}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
             onClick={() => setSelectedCategory(key)}
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all hover:scale-102 ${
               selectedCategory === key
                 ? config.color
                 : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400'
             }`}
           >
             {config.label}
-          </motion.button>
+          </button>
         ))}
       </div>
 
       {/* Notifications List */}
       <div className="space-y-2 max-h-96 overflow-y-auto custom-scrollbar">
-        <AnimatePresence mode="popLayout">
           {filteredNotifications.length === 0 ? (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="text-center py-8 text-slate-500 dark:text-slate-400"
-            >
+            <div className="text-center py-8 text-slate-500 dark:text-slate-400">
               <Bell size={32} className="mx-auto mb-2 opacity-50" />
               <p className="text-sm">Bildirim bulunmuyor</p>
-            </motion.div>
+            </div>
           ) : (
             filteredNotifications.map((notification, index) => {
               const config = typeConfig[notification.type];
               const category = categoryConfig[notification.category];
               
               return (
-                <motion.div
+                <div
                   key={notification.id}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: 20 }}
-                  transition={{ delay: index * 0.05 }}
-                  whileHover={{ x: 4 }}
-                  className={`p-3 rounded-xl ${config.bgColor} ${config.borderColor} border ${!notification.read ? 'shadow-sm' : 'opacity-70'} transition-all group relative`}
+                  className={`p-3 rounded-xl ${config.bgColor} ${config.borderColor} border ${!notification.read ? 'shadow-sm' : 'opacity-70'} transition-all group relative hover:translate-x-1`}
                 >
                   <div className="flex items-start gap-3">
                     <div className={`w-8 h-8 rounded-lg ${config.bgColor} ${config.borderColor} border flex items-center justify-center shrink-0 ${config.iconColor}`}>
@@ -262,44 +238,35 @@ export default function NotificationPanel({
                     </div>
                     <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                       {!notification.read && (
-                        <motion.button
-                          whileHover={{ scale: 1.1 }}
-                          whileTap={{ scale: 0.9 }}
+                        <button
                           onClick={() => onMarkAsRead?.(notification.id)}
-                          className="p-1.5 rounded-lg bg-white dark:bg-slate-700 hover:bg-slate-100 dark:hover:bg-slate-600 text-slate-600 dark:text-slate-300 transition-colors"
+                          className="p-1.5 rounded-lg bg-white dark:bg-slate-700 hover:bg-slate-100 dark:hover:bg-slate-600 text-slate-600 dark:text-slate-300 transition-colors hover:scale-110"
                         >
                           <Check size={12} />
-                        </motion.button>
+                        </button>
                       )}
-                      <motion.button
-                        whileHover={{ scale: 1.1 }}
-                        whileTap={{ scale: 0.9 }}
+                      <button
                         onClick={() => onDismiss?.(notification.id)}
-                        className="p-1.5 rounded-lg bg-white dark:bg-slate-700 hover:bg-rose-50 dark:hover:bg-rose-500/20 text-slate-600 dark:text-slate-300 hover:text-rose-600 dark:hover:text-rose-400 transition-colors"
+                        className="p-1.5 rounded-lg bg-white dark:bg-slate-700 hover:bg-rose-50 dark:hover:bg-rose-500/20 text-slate-600 dark:text-slate-300 hover:text-rose-600 dark:hover:text-rose-400 transition-colors hover:scale-110"
                       >
                         <X size={12} />
-                      </motion.button>
+                      </button>
                     </div>
                   </div>
-                </motion.div>
+                </div>
               );
             })
           )}
-        </AnimatePresence>
       </div>
 
       {/* Footer */}
       {filteredNotifications.length > 0 && (
-        <motion.button
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-          className="w-full mt-4 py-2.5 text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 flex items-center justify-center gap-2 transition-all rounded-xl bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-500/10 dark:to-purple-500/10 hover:from-indigo-100 hover:to-purple-100 dark:hover:from-indigo-500/20 dark:hover:to-purple-500/20"
+        <button
+          className="w-full mt-4 py-2.5 text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 flex items-center justify-center gap-2 transition-all rounded-xl bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-500/10 dark:to-purple-500/10 hover:from-indigo-100 hover:to-purple-100 dark:hover:from-indigo-500/20 dark:hover:to-purple-500/20 hover:scale-102"
         >
           Tümünü Gör
           <ChevronRight size={16} />
-        </motion.button>
+        </button>
       )}
     </div>
   );

@@ -16,6 +16,26 @@ export interface TestPackage {
   totalPrice: number;
 }
 
+export interface Proposal {
+  id: string;
+  company: string;
+  companyId: string;
+  package: string;
+  packageId: string;
+  status: 'pending' | 'approved' | 'rejected';
+  date: string;
+  totalPrice: number;
+  discountPercentage?: number;
+  finalPrice?: number;
+  validityDate?: string;
+  notes?: string;
+  contactPerson?: string;
+  proposalTitle?: string;
+  paymentMethod?: string;
+  deliveryDate?: string;
+  selectedTests?: string[];
+}
+
 export const initialTests: Test[] = [
   { id: '1', name: 'Tam Kan Sayımı', category: 'Laboratuvar', price: 150, unit: '₺' },
   { id: '2', name: 'Biyokimya Paneli', category: 'Laboratuvar', price: 250, unit: '₺' },
@@ -28,6 +48,8 @@ export const initialTests: Test[] = [
 ];
 
 export const initialPackages: TestPackage[] = [];
+
+export const initialProposals: Proposal[] = [];
 
 export const categories = ['Tümü', 'Laboratuvar', 'Görüntüleme', 'Kardiyoloji', 'SFT', 'Odyometri', 'Göz', 'Aşı'];
 
